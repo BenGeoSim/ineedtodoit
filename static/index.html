@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinity ToDo</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Ionicons for beautiful icons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="app-container">
+        <header>
+            <h1>Infinity Tasks</h1>
+            <p>Limitless nesting, seamless syncing.</p>
+        </header>
+
+        <div class="space-dropdown-wrapper" style="position: absolute; top: 24px; left: 24px;">
+            <button id="space-menu-btn" class="action-btn dropdown-toggle" title="Switch Space"
+                style="background: transparent; color: var(--text-main); font-size: 1.8rem; width: 40px; height: 40px;">
+                <ion-icon id="current-space-icon" name="person-outline"></ion-icon>
+            </button>
+            <div id="space-dropdown-menu" class="dropdown-menu space-dropdown">
+                <div id="space-list">
+                    <button class="dropdown-item space-item active" data-id="personal">
+                        <ion-icon name="person-outline"></ion-icon> <span>Personal Tasks</span>
+                    </button>
+                    <!-- other spaces injected here -->
+                </div>
+                <!-- line separator -->
+                <div style="height: 1px; background: var(--card-border); margin: 8px 0;"></div>
+                <button id="invite-btn" class="dropdown-item" title="Invite a user to a new shared space">
+                    <ion-icon name="person-add-outline"></ion-icon> <span>Create Shared Space</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="menu-container">
+            <button id="menu-toggle-btn" class="action-btn" title="Open Menu">
+                <ion-icon name="menu-outline"></ion-icon>
+            </button>
+            <div id="dropdown-menu" class="dropdown-menu">
+                <!-- User Profile (hidden when logged out) -->
+                <div id="user-profile" class="user-profile hidden">
+                    <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
+                    <span id="user-name" class="user-name"></span>
+                </div>
+
+                <button id="export-xml-btn" class="dropdown-item" title="Export to XML">
+                    <ion-icon name="download-outline"></ion-icon> <span>Export XML</span>
+                </button>
+                <a href="/admin.html" id="admin-dashboard-btn" class="dropdown-item hidden"
+                    style="text-decoration:none;">
+                    <ion-icon name="shield-checkmark-outline"></ion-icon> <span>Admin Dashboard</span>
+                </a>
+                <button id="toggle-trash-btn" class="dropdown-item">
+                    <ion-icon name="trash-outline"></ion-icon> <span id="trash-btn-text">View Trash</span>
+                </button>
+                <button id="logout-btn" class="dropdown-item hidden">
+                    <ion-icon name="log-out-outline"></ion-icon> <span>Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="input-group root-input">
+            <input type="text" id="new-todo-input" placeholder="What needs to be done?">
+            <div class="tag-input-wrapper">
+                <input type="text" id="new-todo-tags" placeholder="Tags (comma separated)">
+                <div id="root-tag-dropdown" class="tag-autocomplete-dropdown hidden"></div>
+            </div>
+            <button id="add-todo-btn" class="primary-btn">
+                <ion-icon name="add-outline"></ion-icon>
+            </button>
+        </div>
+
+        <div id="priority-filters" class="tag-filters-container" style="margin-bottom: 10px;">
+            <!-- Priority filter badges will go here -->
+        </div>
+        <div id="tag-filters" class="tag-filters-container">
+            <!-- Filter badges will go here -->
+        </div>
+
+        <div class="todo-container">
+            <ul id="todo-list" class="todo-list">
+                <!-- Todo items will be generated here -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Template for a single Todo Item -->
+    <template id="todo-template">
+        <li class="todo-item" data-id="">
+            <div class="todo-content">
+                <div class="toggle-children hidden" aria-label="Toggle nested items">
+                    <ion-icon name="chevron-forward-outline"></ion-icon>
+                </div>
+                <div class="checkbox">
+                    <ion-icon class="check-icon" name="checkmark-outline"></ion-icon>
+                </div>
+                <!-- Priority Dot -->
+                <div class="priority-dot" title="Cycle Priority"></div>
+                <span class="text" contenteditable="false"></span>
+                <div class="tag-badges"></div>
+                <div class="actions">
+                    <button class="action-btn add-tag" title="Add tag">
+                        <ion-icon name="pricetag-outline"></ion-icon>
+                    </button>
+                    <button class="action-btn add-child" title="Add nested task">
+                        <ion-icon name="return-down-forward-outline"></ion-icon>
+                    </button>
+                    <button class="action-btn edit" title="Edit task">
+                        <ion-icon name="pencil-outline"></ion-icon>
+                    </button>
+                    <button class="action-btn restore hidden" title="Restore task">
+                        <ion-icon name="arrow-undo-outline"></ion-icon>
+                    </button>
+                    <button class="action-btn delete" title="Delete task">
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+            <!-- Add Tag form (hidden by default) -->
+            <div class="add-tag-group hidden">
+                <div class="tag-input-wrapper">
+                    <input type="text" class="inline-tags-input" placeholder="New tags (comma separated)">
+                    <div class="tag-autocomplete-dropdown hidden"></div>
+                </div>
+                <button class="save-tag-btn primary-btn small"><ion-icon name="checkmark-outline"></ion-icon></button>
+                <button class="cancel-tag-btn action-btn"><ion-icon name="close-outline"></ion-icon></button>
+            </div>
+
+            <!-- Sub input form (hidden by default) -->
+            <div class="child-input-group hidden">
+                <input type="text" class="child-input" placeholder="Add nested task...">
+                <div class="tag-input-wrapper">
+                    <input type="text" class="child-tags-input" placeholder="Tags (optional)">
+                    <div class="tag-autocomplete-dropdown hidden"></div>
+                </div>
+                <button class="save-child-btn primary-btn small"><ion-icon name="checkmark-outline"></ion-icon></button>
+                <button class="cancel-child-btn action-btn"><ion-icon name="close-outline"></ion-icon></button>
+            </div>
+            <!-- Nested children list -->
+            <ul class="nested-list"></ul>
+        </li>
+    </template>
+
+    <script src="app.js"></script>
+
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="login-overlay hidden">
+        <div class="login-card">
+            <h2>Welcome Back</h2>
+            <p>Sign in to sync your limitless tasks.</p>
+            <div id="g_id_onload"
+                data-client_id="99993409666-hstadhmvo49nkmjg8u9cr6fvjjo05hli.apps.googleusercontent.com"
+                data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse"
+                data-auto_prompt="false">
+            </div>
+
+            <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
+                data-text="signin_with" data-size="large" data-logo_alignment="left">
+            </div>
+        </div>
+    </div>
+
+    <!-- Invite Dialog Overlay -->
+    <div id="invite-overlay" class="login-overlay hidden">
+        <div class="login-card">
+            <h2>Create Shared Space</h2>
+            <p>Enter the email of the person you want to share a list with.</p>
+            <div class="input-group"
+                style="padding: 0; box-shadow: none; background: transparent; flex-direction: column;">
+                <input type="text" id="invite-name" placeholder="Space Name (e.g., Project X)"
+                    style="width: 100%; margin-bottom: 10px;">
+                <input type="email" id="invite-email" placeholder="Email address"
+                    style="width: 100%; margin-bottom: 10px;">
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button id="submit-invite-btn" class="primary-btn" style="flex: 1;">Create</button>
+                    <button id="cancel-invite-btn" class="secondary-btn" style="flex: 1;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Infinity ToDo</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <style>
+        .admin-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        .settings-card,
+        .users-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .settings-form {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .settings-input {
+            width: 100px;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .users-table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .user-profile-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .delete-btn {
+            background: rgba(255, 82, 82, 0.1);
+            color: #ff5252;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .delete-btn:hover {
+            background: #ff5252;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p style="color: var(--text-secondary);">Manage users & settings</p>
+            </div>
+            <a href="/" class="back-link">
+                <ion-icon name="arrow-back-outline"></ion-icon> Back to App
+            </a>
+        </div>
+
+        <div class="settings-card">
+            <h3>Limit Registrations</h3>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 5px;">Set the maximum amount of users
+                allowed to sign in via Google.</p>
+            <form id="settings-form" class="settings-form">
+                <input type="number" id="max-users-input" class="root-input settings-input" min="1" required>
+                <button type="submit"
+                    style="background: var(--primary); color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; white-space: nowrap; font-weight: 500;">Save
+                    Changes</button>
+            </form>
+        </div>
+
+        <div class="users-card">
+            <h3>Registered Users</h3>
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Active Todos</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="users-tbody">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="users-card" style="margin-top: 30px;">
+            <h3>Active Shared Spaces</h3>
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Space Name & Participants</th>
+                        <th>Created At</th>
+                        <th>Active Todos</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="spaces-tbody">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="/admin.js"></script>
+</body>
+
+</html>
