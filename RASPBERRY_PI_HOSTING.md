@@ -8,25 +8,87 @@ This guide explains how to host your Infinity ToDo application on a Raspberry Pi
 
 ## Phase 2: Set up the Raspberry Pi
 1. **Connect to your Pi**: SSH into your Raspberry Pi terminal (e.g., `ssh pi@192.168.1.x`).
-2. **Clone the code**: Run `git clone https://github.com/yourusername/todo-app.git` (or copy the files over using a USB/SFTP).
+2. **Clone the code**: Run `git clone https://github.com/yourusername/ineedtodoit.git` (or copy the files over using a USB/SFTP).
 3. **Install Dependencies**: 
    ```bash
    sudo apt update
    sudo apt install python3-pip python3-venv
-   cd todo-app
+   cd ineedtodoit
    python3 -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt
    ```
-4. **Create a Systemd Service**: We need the app to automatically start when the Raspberry Pi boots up, and restart if it crashes. We do this by creating a `.service` file. It will essentially run `uvicorn main:app --host 127.0.0.1 --port 8000`.
+4. **Create a Systemd Service**: We need the app to automatically start when the Raspberry Pi boots up, and restart if it crashes. 
+
+   Create and open a new `.service` file:
+   ```bash
+   sudo nano /etc/systemd/system/ineedtodoit.service
+   ```
+   
+   Paste the following configuration (make sure `/home/pi/ineedtodoit` matches your actual project path):
+   ```ini
+   [Unit]
+   Description=Infinity ToDo FastAPI Application
+   After=network.target
+
+   [Service]
+   User=pi
+   Group=www-data
+   WorkingDirectory=/home/pi/ineedtodoit
+   Environment="PATH=/home/pi/ineedtodoit/venv/bin"
+   ExecStart=/home/pi/ineedtodoit/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000
+   Restart=always
+   RestartSec=3
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+   Save and exit `nano` (`Ctrl+O`, `Enter`, `Ctrl+X`).
+
+   Enable and start the service:
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl start ineedtodoit
+   sudo systemctl enable ineedtodoit
+   sudo systemctl status ineedtodoit
+   ```
 
 ## Phase 3: Connect the Domain (Cloudflare Tunnels)
-1. **Move Name Servers**: Go to your domain registrar (wherever you bought `ineedtodo.it` like Namecheap, GoDaddy, etc.) and change the "Nameservers" to point to Cloudflare. Cloudflare provides a free tier that is perfect for this and helps manage DNS and security.
-2. **Create a Tunnel**: Go to the Cloudflare Zero Trust dashboard -> Networks -> Tunnels. Create a new tunnel.
-3. **Install Cloudflared on the Pi**: Cloudflare will give you a single command to run on your Raspberry Pi terminal to install the connector. It looks something like: `sudo cloudflared service install ey...`
-4. **Route the Traffic**: In the Cloudflare Tunnel dashboard, set up a "Public Hostname":
-   * **Domain**: `ineedtodo.it`
-   * **Service**: `http://localhost:8000` (This tells Cloudflare to take external traffic hitting your domain and securely route it through the tunnel to your Python server running locally on port 8000 on the Pi).
 
----
-*If you need help generating the `requirements.txt` file or the `todo-app.service` systemd file, just ask!*
+Connecting your domain (`ineedtodo.it`) using Cloudflare Tunnels is the safest way to expose your application without opening ports on your home router.
+
+### 1. Set up a Cloudflare Account & Move Nameservers
+1. Create a free account at [cloudflare.com](https://www.cloudflare.com/).
+2. Click **"Add a Site"** and enter your domain name: `ineedtodo.it`.
+3. Select the **Free** plan.
+4. Cloudflare will give you **two new Nameservers** (e.g., `amy.ns.cloudflare.com` and `bob.ns.cloudflare.com`).
+5. Log in to your domain registrar (e.g., Namecheap, GoDaddy).
+6. Replace the existing "Nameservers" with the two provided by Cloudflare. (This can take a while to propagate).
+
+### 2. Set up Cloudflare Zero Trust (Tunnels)
+1. In the Cloudflare dashboard, go to **Zero Trust** on the left sidebar.
+2. Navigate to **Networks** -> **Tunnels**.
+3. Click **Create a tunnel**.
+4. Give it a name like `infinity-todo-pi` and click **Save tunnel**.
+
+### 3. Install the `cloudflared` Connector on the Pi
+1. In the tunnel setup, under **"Install and run a connector"**, select **Debian** and your architecture (likely `64-bit` for newer Raspberry Pis).
+2. Copy the provided command block, which looks like:
+   ```bash
+   curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64.deb && 
+   sudo dpkg -i cloudflared.deb && 
+   sudo cloudflared service install eyJh...[a very long token string]...
+   ```
+3. SSH into your Raspberry Pi and **run the copied command**.
+4. Once the Cloudflare dashboard shows "Connected" at the bottom, click **Next**.
+
+### 4. Route Public Traffic to Your App
+1. On the "Route traffic" page, fill in the **Public Hostname**:
+   * **Domain**: Select `ineedtodo.it` from the dropdown.
+   * **Subdomain/Path**: Leave blank (unless you specifically want a subdomain like `app.ineedtodo.it`).
+2. Fill in the **Service**:
+   * **Type**: `HTTP`
+   * **URL**: `localhost:8000` (This matches the port your Systemd service runs on).
+3. Click **Save hostname**.
+
+Wait a minute, then navigate to `https://ineedtodo.it` in your browser. Your Pi is now securely hosted!
