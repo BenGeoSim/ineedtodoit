@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const spacesTbody = document.getElementById('spaces-tbody');
     const settingsForm = document.getElementById('settings-form');
     const maxUsersInput = document.getElementById('max-users-input');
+    const exportDbBtn = document.getElementById('export-db-btn');
+    const importDbForm = document.getElementById('import-db-form');
+    const importDbInput = document.getElementById('import-db-input');
 
     async function loadAdminData() {
         try {
@@ -166,6 +169,51 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (e) {
             console.error(e);
+        }
+    });
+
+    exportDbBtn.addEventListener('click', () => {
+        window.location.href = '/api/admin/database/export';
+    });
+
+    importDbForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!confirm("WARNING: Importing a database will completely overwrite all existing tasks, users, and settings. Are you absolutely sure you want to proceed?")) {
+            return;
+        }
+
+        const file = importDbInput.files[0];
+        if (!file) return alert("Please select a file to import.");
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const btn = importDbForm.querySelector('button');
+            btn.disabled = true;
+            btn.innerHTML = 'Importing...';
+
+            const res = await fetch('/api/admin/database/import', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.ok) {
+                alert("Database successfully imported! Reloading data...");
+                importDbForm.reset();
+                loadAdminData();
+            } else {
+                const errorData = await res.json();
+                alert("Failed to import database: " + errorData.detail);
+            }
+        } catch (e) {
+            console.error(e);
+            alert("An error occurred during import.");
+        } finally {
+            const btn = importDbForm.querySelector('button');
+            btn.disabled = false;
+            btn.innerHTML = '<ion-icon name="cloud-upload-outline" style="margin-right: 5px; vertical-align: middle;"></ion-icon> Import Database';
         }
     });
 

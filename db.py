@@ -67,6 +67,7 @@ def init_db():
             priority INTEGER NOT NULL DEFAULT 3,
             space_id TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
             FOREIGN KEY(parent_id) REFERENCES todos(id) ON DELETE CASCADE,
             FOREIGN KEY(space_id) REFERENCES shared_spaces(id) ON DELETE CASCADE
@@ -95,6 +96,9 @@ def init_db():
         conn.execute("ALTER TABLE todos ADD COLUMN priority INTEGER NOT NULL DEFAULT 3")
     if "space_id" not in columns:
         conn.execute("ALTER TABLE todos ADD COLUMN space_id TEXT REFERENCES shared_spaces(id) ON DELETE CASCADE")
+    if "updated_at" not in columns:
+        conn.execute("ALTER TABLE todos ADD COLUMN updated_at TIMESTAMP")
+        conn.execute("UPDATE todos SET updated_at = created_at")
     # Migration: Add role column to users if it doesn't exist
     user_columns = [info['name'] for info in conn.execute("PRAGMA table_info(users)").fetchall()]
     if 'role' not in user_columns:

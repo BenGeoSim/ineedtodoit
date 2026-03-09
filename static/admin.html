@@ -141,6 +141,27 @@
             </form>
         </div>
 
+        <div class="settings-card">
+            <h3>Database Management</h3>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-top: 5px;">Export your data for backup or
+                import an existing backup. Note: Importing will completely replace the existing database.</p>
+            <div style="display: flex; gap: 15px; margin-top: 15px; align-items: center; flex-wrap: wrap;">
+                <button id="export-db-btn"
+                    style="background: var(--primary); color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500;">
+                    <ion-icon name="download-outline" style="margin-right: 5px; vertical-align: middle;"></ion-icon>
+                    Export Database
+                </button>
+                <form id="import-db-form" style="display: flex; gap: 10px; align-items: center;">
+                    <input type="file" id="import-db-input" accept=".db" class="root-input" required>
+                    <button type="submit"
+                        style="background: rgba(255, 82, 82, 0.1); color: #ff5252; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500;">
+                        <ion-icon name="cloud-upload-outline"
+                            style="margin-right: 5px; vertical-align: middle;"></ion-icon> Import Database
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <div class="users-card">
             <h3>Registered Users</h3>
             <table class="users-table">

@@ -3,7 +3,10 @@ import os
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from fastapi import Cookie, Depends, FastAPI, HTTPException, Response
+from fastapi import Cookie, Depends, FastAPI, HTTPException, Response, UploadFile, File
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import shutil
 from fastapi.staticfiles import StaticFiles
 from google.auth.transport import requests
 from google.oauth2 import id_token
@@ -192,7 +195,8 @@ def get_todos(space_id: Optional[str] = None, user: dict = Depends(get_current_u
             "deleted": bool(r["deleted"]),
             "tags": tags,
             "priority": r["priority"],
-            "space_id": r["space_id"]
+            "space_id": r["space_id"],
+            "updated_at": r["updated_at"]
         })
     return todos
 
@@ -254,7 +258,7 @@ def update_todo(todo_id: str, todo_update: TodoUpdate, user: dict = Depends(get_
         new_tags_json = row["tags"]
     
     conn.execute(
-        "UPDATE todos SET text = ?, completed = ?, deleted = ?, tags = ?, priority = ? WHERE id = ?",
+        "UPDATE todos SET text = ?, completed = ?, deleted = ?, tags = ?, priority = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
         (new_text, 1 if new_completed else 0, 1 if new_deleted else 0, new_tags_json, new_priority, todo_id)
     )
     conn.commit()
@@ -438,6 +442,33 @@ def delete_admin_space(space_id: str, admin_user: dict = Depends(get_current_adm
     conn.commit()
     conn.close()
     return {"status": "success", "message": "Space deleted"}
+
+@app.get("/api/admin/database/export")
+def export_database(admin_user: dict = Depends(get_current_admin)):
+    db_path = db.DB_PATH
+    if not os.path.exists(db_path):
+        raise HTTPException(status_code=404, detail="Database file not found")
+    return FileResponse(path=db_path, filename="todos_backup.db", media_type="application/octet-stream")
+
+@app.post("/api/admin/database/import")
+def import_database(file: UploadFile = File(...), admin_user: dict = Depends(get_current_admin)):
+    if not file.filename.endswith(".db"):
+        raise HTTPException(status_code=400, detail="Must be a .db file")
+    
+    db_path = db.DB_PATH
+    temp_path = db_path + ".tmp"
+    
+    try:
+        with open(temp_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        os.replace(temp_path, db_path)
+    except Exception as e:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        raise HTTPException(status_code=500, detail=f"Failed to import database: {str(e)}")
+        
+    return {"status": "success", "message": "Database successfully replaced"}
 
 import os
 # Only mount static files if the directory exists, otherwise the app will crash before startup
