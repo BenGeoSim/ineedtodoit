@@ -17,6 +17,40 @@ GOOGLE_CLIENT_ID = "99993409666-hstadhmvo49nkmjg8u9cr6fvjjo05hli.apps.googleuser
 
 import db
 
+import asyncio
+
+async def daily_backup_task():
+    backup_dir = "backups"
+    if not os.path.exists(backup_dir):
+        os.makedirs(backup_dir)
+    
+    while True:
+        try:
+            date_str = datetime.now().strftime("%Y-%m-%d")
+            backup_file = os.path.join(backup_dir, f"todos_backup_{date_str}.db")
+            
+            # Create safe online backup
+            import sqlite3
+            conn = db.get_db()
+            bck = sqlite3.connect(backup_file)
+            with bck:
+                conn.backup(bck)
+            bck.close()
+            conn.close()
+            
+            # Keep only the last 7 backups
+            backups = sorted([f for f in os.listdir(backup_dir) if f.startswith("todos_backup_") and f.endswith(".db")])
+            for old_backup in backups[:-7]:
+                try:
+                    os.remove(os.path.join(backup_dir, old_backup))
+                except OSError:
+                    pass
+        except Exception as e:
+            print(f"Error during daily backup: {e}")
+            
+        # Sleep for 24 hours
+        await asyncio.sleep(24 * 60 * 60)
+
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup logic
@@ -25,7 +59,16 @@ async def lifespan(app: FastAPI):
     # Create static dir if it doesn't exist
     if not os.path.exists("static"):
         os.makedirs("static")
+        
+    backup_task = asyncio.create_task(daily_backup_task())
+    
     yield
+    
+    backup_task.cancel()
+    try:
+        await backup_task
+    except asyncio.CancelledError:
+        pass
 
 app = FastAPI(lifespan=lifespan)
 
@@ -462,13 +505,86 @@ def import_database(file: UploadFile = File(...), admin_user: dict = Depends(get
         with open(temp_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         
-        os.replace(temp_path, db_path)
-    except Exception as e:
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
-        raise HTTPException(status_code=500, detail=f"Failed to import database: {str(e)}")
+        conn = db.get_db()
+        cursor = conn.cursor()
+        cursor.execute(f"ATTACH DATABASE ? AS import_db", (temp_path,))
         
-    return {"status": "success", "message": "Database successfully replaced"}
+        # Merge settings
+        cursor.execute('''
+            INSERT INTO settings (key, value)
+            SELECT key, value FROM import_db.settings
+            WHERE true
+            ON CONFLICT(key) DO UPDATE SET value = excluded.value
+        ''')
+        
+        # Merge users
+        cursor.execute('''
+            INSERT INTO users (id, email, name, picture, role, created_at)
+            SELECT id, email, name, picture, role, created_at FROM import_db.users
+            WHERE true
+            ON CONFLICT(id) DO UPDATE SET
+                email = excluded.email,
+                name = excluded.name,
+                picture = excluded.picture,
+                role = excluded.role,
+                created_at = excluded.created_at
+        ''')
+        
+        # Merge shared_spaces
+        cursor.execute('''
+            INSERT INTO shared_spaces (id, name, user1_id, user2_id, created_at)
+            SELECT id, name, user1_id, user2_id, created_at FROM import_db.shared_spaces
+            WHERE true
+            ON CONFLICT(id) DO UPDATE SET
+                name = excluded.name,
+                user1_id = excluded.user1_id,
+                user2_id = excluded.user2_id,
+                created_at = excluded.created_at
+        ''')
+        
+        # Merge todos based on updated_at
+        cursor.execute('''
+            INSERT INTO todos (id, user_id, parent_id, text, completed, deleted, tags, priority, space_id, created_at, updated_at)
+            SELECT id, user_id, parent_id, text, completed, deleted, tags, priority, space_id, created_at, updated_at 
+            FROM import_db.todos
+            WHERE true
+            ON CONFLICT(id) DO UPDATE SET
+                user_id = excluded.user_id,
+                parent_id = excluded.parent_id,
+                text = excluded.text,
+                completed = excluded.completed,
+                deleted = excluded.deleted,
+                tags = excluded.tags,
+                priority = excluded.priority,
+                space_id = excluded.space_id,
+                updated_at = excluded.updated_at
+            WHERE excluded.updated_at > todos.updated_at OR todos.updated_at IS NULL
+        ''')
+        
+        conn.commit()
+        cursor.execute("DETACH DATABASE import_db")
+        cursor.close()
+        conn.close()
+        
+        import gc
+        gc.collect() # Force garbage collection sometimes needed in Windows for sqlite3 files
+        
+        try:
+            os.remove(temp_path)
+        except Exception:
+            pass
+    except Exception as e:
+        error_msg = str(e)
+        try:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+        except Exception:
+            pass
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Failed to merge database: {error_msg}")
+        
+    return {"status": "success", "message": "Database successfully merged"}
 
 import os
 # Only mount static files if the directory exists, otherwise the app will crash before startup

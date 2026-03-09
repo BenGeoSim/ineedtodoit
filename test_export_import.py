@@ -2,7 +2,7 @@ import requests
 import os
 import json
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8001"
 SESSION_COOKIE = None
 
 # We can query the SQLite DB directly to get an admin token if the /api/auth endpoints are hard to hit
