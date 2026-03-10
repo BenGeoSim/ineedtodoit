@@ -452,6 +452,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const prio = item.priority || 3;
         priorityDot.classList.add(`priority-${prio}`);
 
+        // Render Creator Badge (Initials)
+        const creatorBadge = clone.querySelector('.creator-badge');
+        let nameToUse = item.creator_name || item.creator_email || '';
+        // Fallback for optimistic updates locally
+        if (!nameToUse && currentUserProfile) {
+            nameToUse = currentUserProfile.name || currentUserProfile.email || '';
+        }
+
+        if (nameToUse) {
+            // Get up to 2 initials
+            const words = nameToUse.split(/[ @.]+/).filter(w => w.trim().length > 0);
+            let initials = '';
+            if (words.length >= 2) {
+                initials = (words[0][0] + words[1][0]).toUpperCase();
+            } else if (words.length === 1) {
+                initials = words[0].substring(0, 2).toUpperCase();
+            }
+
+            if (initials) {
+                creatorBadge.textContent = initials;
+                creatorBadge.title = `Created by ${nameToUse}`;
+                creatorBadge.classList.remove('hidden');
+            }
+        }
+
         priorityDot.addEventListener('click', async (e) => {
             e.stopPropagation();
             const currentPrio = item.priority || 3;

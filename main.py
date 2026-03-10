@@ -219,9 +219,19 @@ def get_todos(space_id: Optional[str] = None, user: dict = Depends(get_current_u
         if not space:
             conn.close()
             raise HTTPException(status_code=403, detail="Not authorized for this space")
-        rows = conn.execute("SELECT * FROM todos WHERE space_id = ? ORDER BY created_at ASC", (space_id,)).fetchall()
+        rows = conn.execute(
+            "SELECT t.*, u.name as creator_name, u.email as creator_email FROM todos t "
+            "LEFT JOIN users u ON t.user_id = u.id "
+            "WHERE t.space_id = ? ORDER BY t.created_at ASC", 
+            (space_id,)
+        ).fetchall()
     else:
-        rows = conn.execute("SELECT * FROM todos WHERE user_id = ? AND space_id IS NULL ORDER BY created_at ASC", (user["id"],)).fetchall()
+        rows = conn.execute(
+            "SELECT t.*, u.name as creator_name, u.email as creator_email FROM todos t "
+            "LEFT JOIN users u ON t.user_id = u.id "
+            "WHERE t.user_id = ? AND t.space_id IS NULL ORDER BY t.created_at ASC", 
+            (user["id"],)
+        ).fetchall()
         
     conn.close()
     
@@ -242,7 +252,9 @@ def get_todos(space_id: Optional[str] = None, user: dict = Depends(get_current_u
             "tags": tags,
             "priority": r["priority"],
             "space_id": r["space_id"],
-            "updated_at": r["updated_at"]
+            "updated_at": r["updated_at"],
+            "creator_name": r["creator_name"] if "creator_name" in r.keys() else None,
+            "creator_email": r["creator_email"] if "creator_email" in r.keys() else None
         })
     return todos
 
