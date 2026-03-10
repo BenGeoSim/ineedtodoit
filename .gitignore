@@ -18,6 +18,8 @@ venv.bak/
 # Database
 todos.db
 *.sqlite3
+*.db
+backups/
 
 # IDEs and Editors
 .vscode/
