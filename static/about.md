@@ -2,6 +2,9 @@
 
 Welcome to **ineedtodo.it**, your limitless nesting, seamlessly syncing todo app!
 
+I need to do a instructions section for some of the more unintuitive parts of the interface.
+If I only I had a way to keep track of things like that. :(
+
 ## Features
 - **Nested Tasks**: Break big tasks into small, manageable items.
 - **Shared Spaces**: Collaborate with others in real-time.
@@ -9,4 +12,4 @@ Welcome to **ineedtodo.it**, your limitless nesting, seamlessly syncing todo app
 
 ---
 
-*You can customize this page anytime by modifying the `static/about.md` file!*
+*Let me know if you have any suggestions :)*
