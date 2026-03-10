@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - ineedtodo.it</title>
+    <link rel="stylesheet" href="/styles.css?v=1.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        .about-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            color: var(--text-main);
+            position: relative;
+            z-index: 2;
+        }
+
+        .about-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 20px;
+        }
+
+        .back-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        /* Markdown Styles */
+        #content h1,
+        #content h2,
+        #content h3 {
+            color: var(--text-main);
+            margin-top: 32px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        #content h1:first-child {
+            margin-top: 0;
+        }
+
+        #content p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        #content ul,
+        #content ol {
+            color: var(--text-secondary);
+            margin-left: 20px;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        #content li {
+            margin-bottom: 8px;
+        }
+
+        #content strong {
+            color: var(--text-main);
+        }
+
+        #content a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        #content a:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        #content code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: var(--primary);
+        }
+
+        #content hr {
+            border: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.05);
+            margin: 30px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="about-container">
+        <div class="about-header">
+            <div>
+                <h1>About us</h1>
+                <p style="color: var(--text-secondary); margin-top: 4px;">More information about the platform</p>
+            </div>
+            <a href="/" class="back-link">
+                <ion-icon name="arrow-back-outline"></ion-icon> Back to App
+            </a>
+        </div>
+
+        <div id="content">
+            <p style="text-align: center; color: var(--text-muted); padding: 40px 0;">
+                <ion-icon name="sync-outline"
+                    style="animation: spin 2s linear infinite; font-size: 24px; vertical-align: middle;"></ion-icon>
+                <span style="display: inline-block; margin-left: 10px;">Loading content...</span>
+            </p>
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const contentDiv = document.getElementById('content');
+            try {
+                // Fetch the markdown file. Appending timestamp prevents caching for simple local config file.
+                const response = await fetch('/about.md?v=' + new Date().getTime());
+                if (!response.ok) throw new Error('Could not load about.md');
+
+                const markdown = await response.text();
+
+                // Render it to HTML
+                contentDiv.innerHTML = marked.parse(markdown);
+            } catch (error) {
+                console.error('Error fetching about.md:', error);
+                contentDiv.innerHTML = '<p style="color: #ff5252; padding: 20px; text-align: center;">Failed to load the about content. Please ensure `static/about.md` exists on the server.</p>';
+            }
+        });
+    </script>
+</body>
+
+</html>
