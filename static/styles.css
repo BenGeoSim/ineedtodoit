@@ -665,6 +665,10 @@ ul.expanded {
     transition: var(--transition);
 }
 
+.dropdown-item.hidden {
+    display: none !important;
+}
+
 .dropdown-item:hover {
     background: rgba(255, 255, 255, 0.1);
 }

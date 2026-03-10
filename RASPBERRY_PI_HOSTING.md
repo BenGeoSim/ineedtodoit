@@ -92,3 +92,29 @@ Connecting your domain (`ineedtodo.it`) using Cloudflare Tunnels is the safest w
 3. Click **Save hostname**.
 
 Wait a minute, then navigate to `https://ineedtodo.it` in your browser. Your Pi is now securely hosted!
+
+## Phase 4: Updating the App
+
+If you've made changes locally and pushed them to GitHub, follow these steps to update your live Raspberry Pi app:
+
+1. **SSH into your Pi**: `ssh pi@192.168.1.x`
+2. **Navigate to the project directory**: `cd ineedtodoit`
+3. **Pull the latest changes**: `git pull`
+4. **Update Dependencies** (Only necessary if requirements changed):
+   ```bash
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+5. **Restart the application**: Once the new code is downloaded, apply it by restarting the systemd service:
+   ```bash
+   sudo systemctl restart ineedtodoit
+   ```
+
+6. **Test the Application**: You can verify the application is running smoothly on your Raspberry Pi by checking the service status and logs:
+   ```bash
+   # Check if the service is running
+   sudo systemctl status ineedtodoit
+
+   # Check the latest application logs (look for "Application startup complete")
+   sudo journalctl -u ineedtodoit -n 20
+   ```

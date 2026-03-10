@@ -63,6 +63,25 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) { console.error('Failed to load spaces', e); }
     }
 
+    function updateTagline() {
+        const taglineEl = document.getElementById('header-tagline');
+        const renameBtn = document.getElementById('rename-space-btn');
+        if (!taglineEl) return;
+
+        if (currentSpaceId === null) {
+            taglineEl.textContent = 'Limitless nesting, seamless syncing.';
+            if (renameBtn) renameBtn.classList.add('hidden');
+        } else {
+            const space = sharedSpaces.find(s => s.id === currentSpaceId);
+            if (space) {
+                const u1 = space.user1_name || space.user1_email;
+                const u2 = space.user2_name || space.user2_email;
+                taglineEl.textContent = `${space.name} • Shared between ${u1} and ${u2}`;
+                if (renameBtn) renameBtn.classList.remove('hidden');
+            }
+        }
+    }
+
     function renderSpaceSelector() {
         const spaceList = document.getElementById('space-list');
         const currentSpaceBtn = document.getElementById('space-menu-btn');
@@ -110,6 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderSpaceSelector();
             });
         });
+
+        updateTagline();
     }
 
     // Dropdown toggle logic
@@ -313,11 +334,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         filterContainer.style.display = 'flex';
 
-        // Add "All" badge
+        // Add "All tags" badge
         const allBadge = document.createElement('span');
         allBadge.className = 'filter-badge';
         if (selectedTag === null) allBadge.classList.add('active');
-        allBadge.textContent = 'All';
+        allBadge.textContent = 'All tags';
         allBadge.addEventListener('click', () => {
             selectedTag = null;
             rootTagsInput.value = ''; // clear input when deselecting filter
@@ -368,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const badge = document.createElement('span');
             badge.className = 'filter-badge';
             if (selectedPriority === i) badge.classList.add('active');
-            badge.textContent = `P${i}`;
+            badge.title = `Priority ${i}`;
             badge.style.display = 'flex';
             badge.style.alignItems = 'center';
             badge.style.gap = '6px';
@@ -921,6 +942,86 @@ document.addEventListener('DOMContentLoaded', () => {
             submitInviteBtn.textContent = 'Create';
         }
     });
+
+    // Rename Space Logic
+    const renameSpaceBtn = document.getElementById('rename-space-btn');
+    const renameOverlay = document.getElementById('rename-overlay');
+    const renameNameInput = document.getElementById('rename-name');
+    const submitRenameBtn = document.getElementById('submit-rename-btn');
+    const cancelRenameBtn = document.getElementById('cancel-rename-btn');
+
+    if (renameSpaceBtn) {
+        renameSpaceBtn.addEventListener('click', () => {
+            // Close the space dropdown immediately
+            document.getElementById('space-dropdown-menu').classList.remove('show');
+
+            if (currentSpaceId === null) return;
+            const space = sharedSpaces.find(s => s.id === currentSpaceId);
+            if (!space) return;
+
+            renameOverlay.classList.remove('hidden');
+            renameNameInput.value = space.name;
+            renameNameInput.focus();
+
+            // Highlight the text inside so they can start typing right away
+            renameNameInput.select();
+        });
+    }
+
+    if (cancelRenameBtn) {
+        cancelRenameBtn.addEventListener('click', () => {
+            renameOverlay.classList.add('hidden');
+        });
+    }
+
+    if (submitRenameBtn) {
+        submitRenameBtn.addEventListener('click', async () => {
+            if (currentSpaceId === null) return;
+            const space = sharedSpaces.find(s => s.id === currentSpaceId);
+            if (!space) return;
+
+            const newName = renameNameInput.value.trim();
+            if (newName && newName !== space.name) {
+                try {
+                    submitRenameBtn.disabled = true;
+                    submitRenameBtn.textContent = 'Saving...';
+
+                    const res = await fetch(`/api/shared_spaces/${currentSpaceId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ name: newName })
+                    });
+
+                    if (!res.ok) {
+                        const errorData = await res.json();
+                        throw new Error(errorData.detail || 'Failed to rename space');
+                    }
+
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                        space.name = data.name;
+                        updateTagline();
+                        renderSpaceSelector();
+                        renameOverlay.classList.add('hidden');
+                    }
+                } catch (e) {
+                    alert(e.message);
+                } finally {
+                    submitRenameBtn.disabled = false;
+                    submitRenameBtn.textContent = 'Save';
+                }
+            } else if (newName === space.name) {
+                // No changes made, just close
+                renameOverlay.classList.add('hidden');
+            }
+        });
+
+        renameNameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') submitRenameBtn.click();
+            if (e.key === 'Escape') cancelRenameBtn.click();
+        });
+    }
 
     // XML Export
     const exportXmlBtn = document.getElementById('export-xml-btn');

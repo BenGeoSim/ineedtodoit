@@ -21,8 +21,10 @@
 
     <div class="app-container">
         <header>
-            <h1>ineedtodo.it</h1>
-            <p>Limitless nesting, seamless syncing.</p>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <h1 id="header-title">ineedtodo.it</h1>
+            </div>
+            <p id="header-tagline">Limitless nesting, seamless syncing.</p>
         </header>
 
         <div class="space-dropdown-wrapper" style="position: absolute; top: 24px; left: 24px;">
@@ -39,6 +41,9 @@
                 </div>
                 <!-- line separator -->
                 <div style="height: 1px; background: var(--card-border); margin: 8px 0;"></div>
+                <button id="rename-space-btn" class="dropdown-item hidden" title="Rename current space">
+                    <ion-icon name="pencil-outline"></ion-icon> <span>Rename Space</span>
+                </button>
                 <button id="invite-btn" class="dropdown-item" title="Invite a user to a new shared space">
                     <ion-icon name="person-add-outline"></ion-icon> <span>Create Shared Space</span>
                 </button>
@@ -187,6 +192,22 @@
                 <div style="display: flex; gap: 10px; width: 100%;">
                     <button id="submit-invite-btn" class="primary-btn" style="flex: 1;">Create</button>
                     <button id="cancel-invite-btn" class="secondary-btn" style="flex: 1;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rename Dialog Overlay -->
+    <div id="rename-overlay" class="login-overlay hidden">
+        <div class="login-card">
+            <h2>Rename Space</h2>
+            <div class="input-group"
+                style="padding: 0; box-shadow: none; background: transparent; flex-direction: column;">
+                <input type="text" id="rename-name" placeholder="New Space Name"
+                    style="width: 100%; margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button id="submit-rename-btn" class="primary-btn" style="flex: 1;">Save</button>
+                    <button id="cancel-rename-btn" class="secondary-btn" style="flex: 1;">Cancel</button>
                 </div>
             </div>
         </div>

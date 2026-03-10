@@ -95,6 +95,9 @@ class SharedSpaceCreate(BaseModel):
     name: str = "Shared Space"
     email: str
 
+class SharedSpaceUpdate(BaseModel):
+    name: str
+
 class SettingsUpdate(BaseModel):
     max_users: int
 
@@ -386,6 +389,29 @@ def create_shared_space(req: SharedSpaceCreate, user: dict = Depends(get_current
     conn.close()
     
     return {"id": space_id, "status": "created"}
+
+@app.put("/api/shared_spaces/{space_id}")
+def update_shared_space(space_id: str, req: SharedSpaceUpdate, user: dict = Depends(get_current_user)):
+    conn = db.get_db()
+    
+    # Verify user is part of the space
+    space = conn.execute(
+        "SELECT id FROM shared_spaces WHERE id = ? AND (user1_id = ? OR user2_id = ?)",
+        (space_id, user["id"], user["id"])
+    ).fetchone()
+    
+    if not space:
+        conn.close()
+        raise HTTPException(status_code=403, detail="Not authorized for this space")
+        
+    conn.execute(
+        "UPDATE shared_spaces SET name = ? WHERE id = ?",
+        (req.name, space_id)
+    )
+    conn.commit()
+    conn.close()
+    
+    return {"status": "success", "name": req.name}
 
 # Admin Routes
 @app.get("/api/admin/users")
