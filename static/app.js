@@ -14,7 +14,20 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSpaceId = null;
     let sharedSpaces = [];
     let currentUserProfile = null;
-    let sortBy = 'created'; // or 'priority'
+
+    // Persist sort preference per space
+    const getSortPreference = () => {
+        const key = `sort_pref_${currentSpaceId || 'personal'}`;
+        return localStorage.getItem(key) || 'created';
+    };
+
+    let sortBy = getSortPreference();
+
+    const setSortPreference = (val) => {
+        sortBy = val;
+        const key = `sort_pref_${currentSpaceId || 'personal'}`;
+        localStorage.setItem(key, val);
+    };
 
     function updateGlobalTodo(id, changes) {
         const globalTodo = todos.find(t => t.id === id);
@@ -119,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             item.addEventListener('click', (e) => {
                 const val = item.dataset.id;
                 currentSpaceId = val === 'personal' ? null : val;
+                sortBy = getSortPreference(); // Load preference for new space
 
                 // Close dropdown
                 document.getElementById('space-dropdown-menu').classList.remove('show');
@@ -452,7 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sortBy === opt.id) badge.classList.add('active');
             badge.textContent = opt.label;
             badge.addEventListener('click', () => {
-                sortBy = opt.id;
+                setSortPreference(opt.id);
                 render();
             });
             sortContainer.appendChild(badge);
