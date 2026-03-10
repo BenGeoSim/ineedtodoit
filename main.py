@@ -252,6 +252,7 @@ def get_todos(space_id: Optional[str] = None, user: dict = Depends(get_current_u
             "tags": tags,
             "priority": r["priority"],
             "space_id": r["space_id"],
+            "created_at": r["created_at"],
             "updated_at": r["updated_at"],
             "creator_name": r["creator_name"] if "creator_name" in r.keys() else None,
             "creator_email": r["creator_email"] if "creator_email" in r.keys() else None

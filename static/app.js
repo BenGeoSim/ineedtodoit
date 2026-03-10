@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSpaceId = null;
     let sharedSpaces = [];
     let currentUserProfile = null;
+    let sortBy = 'created'; // or 'priority'
 
     function updateGlobalTodo(id, changes) {
         const globalTodo = todos.find(t => t.id === id);
@@ -234,6 +235,29 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Sort levels
+        const sortFn = (a, b) => {
+            if (sortBy === 'priority') {
+                // Priority ascending (1 is highest), if equal then created
+                if (a.priority !== b.priority) {
+                    return (a.priority || 3) - (b.priority || 3);
+                }
+            }
+            // Default to created_at
+            return (a.created_at || '').localeCompare(b.created_at || '');
+        };
+
+        const sortItemsRecursive = (list) => {
+            list.sort(sortFn);
+            list.forEach(i => {
+                if (i.children && i.children.length > 0) {
+                    sortItemsRecursive(i.children);
+                }
+            });
+        };
+
+        sortItemsRecursive(rootItems);
+
         return rootItems;
     }
 
@@ -412,8 +436,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function renderSortFilters() {
+        const sortContainer = document.getElementById('sort-filters');
+        if (!sortContainer) return;
+
+        sortContainer.innerHTML = '';
+        const options = [
+            { id: 'created', label: 'Created Date' },
+            { id: 'priority', label: 'Priority' }
+        ];
+
+        options.forEach(opt => {
+            const badge = document.createElement('span');
+            badge.className = 'filter-badge';
+            if (sortBy === opt.id) badge.classList.add('active');
+            badge.textContent = opt.label;
+            badge.addEventListener('click', () => {
+                sortBy = opt.id;
+                render();
+            });
+            sortContainer.appendChild(badge);
+        });
+    }
+
     function render() {
         listEl.innerHTML = '';
+        renderSortFilters();
         renderFilters();
         renderPriorityFilters();
 
