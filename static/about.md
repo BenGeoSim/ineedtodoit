@@ -6,7 +6,7 @@ I need to do a instructions section for some of the more unintuitive parts of th
 If I only I had a way to keep track of things like that. :(
 
 ## Main Goal
-To create a todo list app with just the features I wanted and not too much bigger.
+To create a ~~minimalist~~ *minimalish* todo list app with just the features I wanted and not too much bigger.
 
 ## Features
 - **Nested Tasks**: Break big tasks into small, manageable items.
