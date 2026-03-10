@@ -18,7 +18,7 @@ cd ineedtodoit
 ## Step 3: Download the Latest Code
 Pull your newest changes from GitHub:
 ```bash
-git pull
+git pull origin master
 ```
 
 
