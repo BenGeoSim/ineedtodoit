@@ -82,7 +82,7 @@ body {
 
 .app-container {
     width: 100%;
-    max-width: 700px;
+    max-width: 1024px;
     background: var(--card-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
@@ -105,6 +105,7 @@ h1 {
     margin-bottom: 8px;
     background: linear-gradient(135deg, #e0e7ff, #a5b4fc);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -217,6 +218,7 @@ header p {
     margin-bottom: 8px;
     background: linear-gradient(135deg, #e0e7ff, #a5b4fc);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
