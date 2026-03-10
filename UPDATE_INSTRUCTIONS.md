@@ -18,9 +18,9 @@ cd ineedtodoit
 ## Step 3: Download the Latest Code
 Pull your newest changes from GitHub:
 ```bash
-git pull origin main
+git pull
 ```
-*(If your branch is named `master` instead of `main`, use `git pull origin master`.)*
+
 
 ## Step 4: Update the Code Dependencies (Only if necessary)
 If you added new packages to the `requirements.txt` file, you need to install them on the Pi:
