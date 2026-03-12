@@ -130,7 +130,13 @@
                 <div class="creator-badge hidden" title="Created by"></div>
                 <span class="text" contenteditable="false"></span>
                 <div class="tag-badges"></div>
+                <span class="description-indicator hidden" title="Has description">
+                    <ion-icon name="document-text-outline"></ion-icon>
+                </span>
                 <div class="actions">
+                    <button class="action-btn description-toggle" title="View/edit description">
+                        <ion-icon name="document-text-outline"></ion-icon>
+                    </button>
                     <button class="action-btn add-tag" title="Add tag">
                         <ion-icon name="pricetag-outline"></ion-icon>
                     </button>
@@ -145,6 +151,21 @@
                     </button>
                     <button class="action-btn delete" title="Delete task">
                         <ion-icon name="trash-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+            <!-- Description Panel (hidden by default) -->
+            <div class="description-panel hidden">
+                <div class="description-content" contenteditable="false" data-placeholder="Click to add a description..."></div>
+                <div class="description-actions">
+                    <button class="description-edit-btn action-btn" title="Edit description">
+                        <ion-icon name="pencil-outline"></ion-icon>
+                    </button>
+                    <button class="description-save-btn primary-btn small hidden">
+                        <ion-icon name="checkmark-outline"></ion-icon>
+                    </button>
+                    <button class="description-cancel-btn action-btn hidden">
+                        <ion-icon name="close-outline"></ion-icon>
                     </button>
                 </div>
             </div>

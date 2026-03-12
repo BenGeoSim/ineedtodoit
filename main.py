@@ -77,6 +77,7 @@ import json
 class TodoCreate(BaseModel):
     id: str
     text: str
+    description: str = ''
     parent_id: Optional[str] = None
     completed: bool = False
     deleted: bool = False
@@ -86,6 +87,7 @@ class TodoCreate(BaseModel):
 
 class TodoUpdate(BaseModel):
     text: Optional[str] = None
+    description: Optional[str] = None
     completed: Optional[bool] = None
     deleted: Optional[bool] = None
     tags: Optional[List[str]] = None
@@ -246,7 +248,8 @@ def get_todos(space_id: Optional[str] = None, user: dict = Depends(get_current_u
         todos.append({
             "id": r["id"], 
             "parent_id": r["parent_id"], 
-            "text": r["text"], 
+            "text": r["text"],
+            "description": r["description"] if "description" in r.keys() else '',
             "completed": bool(r["completed"]),
             "deleted": bool(r["deleted"]),
             "tags": tags,
@@ -281,8 +284,8 @@ def create_todo(todo: TodoCreate, user: dict = Depends(get_current_user)):
             
     try:
         conn.execute(
-            "INSERT INTO todos (id, user_id, parent_id, text, completed, deleted, tags, priority, space_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (todo.id, user["id"], todo.parent_id, todo.text, todo.completed, todo.deleted, json.dumps(todo.tags), todo.priority, todo.space_id)
+            "INSERT INTO todos (id, user_id, parent_id, text, description, completed, deleted, tags, priority, space_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (todo.id, user["id"], todo.parent_id, todo.text, todo.description, todo.completed, todo.deleted, json.dumps(todo.tags), todo.priority, todo.space_id)
         )
         conn.commit()
     except Exception as e:
@@ -307,6 +310,7 @@ def update_todo(todo_id: str, todo_update: TodoUpdate, user: dict = Depends(get_
     print(f"Row before update: {dict(row)}")
     
     new_text = todo_update.text if todo_update.text is not None else row["text"]
+    new_description = todo_update.description if todo_update.description is not None else (row["description"] if "description" in row.keys() else '')
     new_completed = todo_update.completed if todo_update.completed is not None else row["completed"]
     new_deleted = todo_update.deleted if todo_update.deleted is not None else row["deleted"]
     new_priority = todo_update.priority if todo_update.priority is not None else row["priority"]
@@ -317,8 +321,8 @@ def update_todo(todo_id: str, todo_update: TodoUpdate, user: dict = Depends(get_
         new_tags_json = row["tags"]
     
     conn.execute(
-        "UPDATE todos SET text = ?, completed = ?, deleted = ?, tags = ?, priority = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-        (new_text, 1 if new_completed else 0, 1 if new_deleted else 0, new_tags_json, new_priority, todo_id)
+        "UPDATE todos SET text = ?, description = ?, completed = ?, deleted = ?, tags = ?, priority = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        (new_text, new_description, 1 if new_completed else 0, 1 if new_deleted else 0, new_tags_json, new_priority, todo_id)
     )
     conn.commit()
     conn.close()
@@ -328,7 +332,7 @@ def update_todo(todo_id: str, todo_update: TodoUpdate, user: dict = Depends(get_
     except:
         new_tags = []
         
-    return {"id": todo_id, "text": new_text, "completed": new_completed, "deleted": new_deleted, "tags": new_tags, "priority": new_priority, "space_id": row["space_id"]}
+    return {"id": todo_id, "text": new_text, "description": new_description, "completed": new_completed, "deleted": new_deleted, "tags": new_tags, "priority": new_priority, "space_id": row["space_id"]}
 
 @app.delete("/api/todos/{todo_id}")
 def delete_todo(todo_id: str, user: dict = Depends(get_current_user)):

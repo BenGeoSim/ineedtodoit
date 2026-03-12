@@ -61,6 +61,7 @@ def init_db():
             user_id TEXT NOT NULL,
             parent_id TEXT,
             text TEXT NOT NULL,
+            description TEXT DEFAULT '',
             completed BOOLEAN NOT NULL DEFAULT 0,
             deleted BOOLEAN NOT NULL DEFAULT 0,
             tags TEXT DEFAULT '[]',
@@ -99,6 +100,8 @@ def init_db():
     if "updated_at" not in columns:
         conn.execute("ALTER TABLE todos ADD COLUMN updated_at TIMESTAMP")
         conn.execute("UPDATE todos SET updated_at = created_at")
+    if "description" not in columns:
+        conn.execute("ALTER TABLE todos ADD COLUMN description TEXT DEFAULT ''")
     # Migration: Add role column to users if it doesn't exist
     user_columns = [info['name'] for info in conn.execute("PRAGMA table_info(users)").fetchall()]
     if 'role' not in user_columns:

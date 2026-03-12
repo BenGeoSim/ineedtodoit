@@ -829,6 +829,93 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Escape') cancelTagBtn.click();
         });
 
+        // Description Panel Logic
+        const descToggleBtn = clone.querySelector('.action-btn.description-toggle');
+        const descIndicator = clone.querySelector('.description-indicator');
+        const descPanel = clone.querySelector('.description-panel');
+        const descContent = clone.querySelector('.description-content');
+        const descEditBtn = clone.querySelector('.description-edit-btn');
+        const descSaveBtn = clone.querySelector('.description-save-btn');
+        const descCancelBtn = clone.querySelector('.description-cancel-btn');
+
+        // Set initial content
+        const currentDesc = item.description || '';
+        descContent.textContent = currentDesc;
+
+        // Highlight button and show indicator if description exists
+        if (currentDesc.trim()) {
+            descToggleBtn.classList.add('has-description');
+            descIndicator.classList.remove('hidden');
+        }
+
+        descToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            descPanel.classList.toggle('hidden');
+        });
+
+        descEditBtn.addEventListener('click', () => {
+            descContent.contentEditable = true;
+            descContent.focus();
+            descEditBtn.classList.add('hidden');
+            descSaveBtn.classList.remove('hidden');
+            descCancelBtn.classList.remove('hidden');
+
+            // Place cursor at end
+            const range = document.createRange();
+            range.selectNodeContents(descContent);
+            range.collapse(false);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        });
+
+        descCancelBtn.addEventListener('click', () => {
+            descContent.contentEditable = false;
+            descContent.textContent = item.description || '';
+            descEditBtn.classList.remove('hidden');
+            descSaveBtn.classList.add('hidden');
+            descCancelBtn.classList.add('hidden');
+        });
+
+        async function saveDescription() {
+            const newDesc = descContent.textContent.trim();
+            descContent.contentEditable = false;
+            descEditBtn.classList.remove('hidden');
+            descSaveBtn.classList.add('hidden');
+            descCancelBtn.classList.add('hidden');
+
+            if (newDesc !== (item.description || '')) {
+                item.description = newDesc;
+                updateGlobalTodo(item.id, { description: newDesc });
+
+                // Update toggle button highlight and indicator
+                if (newDesc) {
+                    descToggleBtn.classList.add('has-description');
+                    descIndicator.classList.remove('hidden');
+                } else {
+                    descToggleBtn.classList.remove('has-description');
+                    descIndicator.classList.add('hidden');
+                }
+
+                try {
+                    const res = await fetch(`/api/todos/${item.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ description: newDesc })
+                    });
+                    if (res.status === 401) window.location.reload();
+                } catch (err) {
+                    console.error('Failed to save description', err);
+                }
+            }
+        }
+
+        descSaveBtn.addEventListener('click', saveDescription);
+        descContent.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') descCancelBtn.click();
+        });
+
         // Add Child Action
         const addChildBtn = clone.querySelector('.action-btn.add-child');
         const childInputGroup = clone.querySelector('.child-input-group');

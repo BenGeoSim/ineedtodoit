@@ -782,6 +782,89 @@ body.trash-mode #tag-filters {
     transform: scale(1.1);
 }
 
+/* Description Panel */
+.description-panel {
+    margin-top: 8px;
+    margin-left: 20px;
+    padding: 14px 18px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    animation: fadeIn 0.25s ease-out forwards;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.description-panel.hidden {
+    display: none;
+}
+
+.description-content {
+    flex: 1;
+    min-height: 32px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    outline: none;
+    border-radius: 8px;
+    padding: 6px 8px;
+    transition: var(--transition);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.description-content:empty::before {
+    content: attr(data-placeholder);
+    color: rgba(148, 163, 184, 0.5);
+    font-style: italic;
+}
+
+.description-content[contenteditable="true"] {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px dashed var(--accent);
+    color: var(--text-main);
+}
+
+.description-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    align-items: flex-start;
+    padding-top: 4px;
+}
+
+.description-actions .hidden {
+    display: none;
+}
+
+/* Description toggle button highlight when description exists */
+.action-btn.description-toggle.has-description {
+    color: var(--accent);
+    background: rgba(99, 102, 241, 0.15);
+}
+
+.action-btn.description-toggle.has-description:hover {
+    background: rgba(99, 102, 241, 0.3);
+}
+
+/* Description Indicator (always-visible, non-clickable) */
+.description-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 0.95rem;
+    margin-left: 8px;
+    opacity: 0.7;
+    cursor: default;
+    flex-shrink: 0;
+}
+
+.description-indicator.hidden {
+    display: none;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 600px) {
     body {
