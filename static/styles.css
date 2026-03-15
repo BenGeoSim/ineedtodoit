@@ -987,16 +987,6 @@ body.trash-mode #tag-filters {
         flex-wrap: wrap;
     }
 
-    .task-controls {
-        flex-direction: column;
-        gap: 2px;
-    }
-
-    .task-controls .action-btn.add-child {
-        margin-left: 0;
-        margin-right: 0;
-    }
-
     .tag-badges {
         margin-top: 8px;
         margin-left: 0;
@@ -1017,5 +1007,17 @@ body.trash-mode #tag-filters {
     .child-input-group {
         margin-left: 12px;
         flex-direction: column;
+    }
+}
+
+@media (orientation: portrait) {
+    .task-controls {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .task-controls .action-btn.add-child {
+        margin-left: 0;
+        margin-right: 0;
     }
 }
