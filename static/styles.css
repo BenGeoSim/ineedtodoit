@@ -773,6 +773,53 @@ body.trash-mode #tag-filters {
     color: var(--accent);
 }
 
+/* Due Date Badge */
+.due-date-badge {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: var(--transition);
+}
+
+.due-date-badge:hover {
+    background: rgba(255, 255, 255, 0.13);
+}
+
+.due-date-badge.due-urgent {
+    background: rgba(var(--due-prio-rgb), 0.15);
+    color: var(--due-prio-color);
+    border-color: rgba(var(--due-prio-rgb), 0.35);
+}
+
+.due-date-badge.due-overdue {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--priority-1);
+    border-color: rgba(239, 68, 68, 0.35);
+}
+
+.due-date-input {
+    width: 130px;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 8px;
+    border: 1px solid var(--accent);
+    background: var(--bg-color);
+    color: var(--text-main);
+    flex-shrink: 0;
+    color-scheme: dark;
+}
+
+.due-date-input.hidden,
+.due-date-badge.hidden {
+    display: none;
+}
+
 /* Item Tags */
 .tag-badges {
     display: flex;
@@ -874,17 +921,26 @@ body.trash-mode #tag-filters {
     background: rgba(99, 102, 241, 0.3);
 }
 
-/* Description Indicator (always-visible, non-clickable) */
+/* Description Indicator */
 .description-indicator {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--accent);
-    font-size: 0.95rem;
-    margin-left: 8px;
-    opacity: 0.7;
-    cursor: default;
+    gap: 4px;
+    font-size: 0.72rem;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    cursor: pointer;
     flex-shrink: 0;
+    transition: var(--transition);
+}
+
+.description-indicator:hover {
+    background: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.6);
 }
 
 .description-indicator.hidden {

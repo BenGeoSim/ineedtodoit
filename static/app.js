@@ -647,6 +647,90 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Due Date
+        const dueBadge = clone.querySelector('.due-date-badge');
+        const dueDateInput = clone.querySelector('.due-date-input');
+
+        const priorityColors = {
+            1: { color: '#ef4444', rgb: '239,68,68' },
+            2: { color: '#f97316', rgb: '249,115,22' },
+            3: { color: '#eab308', rgb: '234,179,8' },
+            4: { color: '#3b82f6', rgb: '59,130,246' },
+            5: { color: '#64748b', rgb: '100,116,139' },
+        };
+
+        function renderDueBadge() {
+            if (!item.due_date) {
+                dueBadge.classList.add('hidden');
+                return;
+            }
+            const due = new Date(item.due_date + 'T00:00:00');
+            const today = new Date(); today.setHours(0,0,0,0);
+            const diffMs = due - today;
+            const diffDays = Math.ceil(diffMs / 86400000);
+
+            let label;
+            if (diffDays === 0) label = 'Today';
+            else if (diffDays === 1) label = 'Tomorrow';
+            else if (diffDays === -1) label = 'Yesterday';
+            else {
+                const opts = { month: 'short', day: 'numeric' };
+                if (due.getFullYear() !== today.getFullYear()) opts.year = '2-digit';
+                label = due.toLocaleDateString(undefined, opts);
+            }
+
+            dueBadge.textContent = label;
+            dueBadge.classList.remove('hidden', 'due-urgent', 'due-overdue');
+            dueBadge.style.removeProperty('--due-prio-color');
+            dueBadge.style.removeProperty('--due-prio-rgb');
+
+            if (diffDays < 0) {
+                dueBadge.classList.add('due-overdue');
+            } else if (diffDays < 7) {
+                const prio = item.priority || 3;
+                const pc = priorityColors[prio] || priorityColors[3];
+                dueBadge.style.setProperty('--due-prio-color', pc.color);
+                dueBadge.style.setProperty('--due-prio-rgb', pc.rgb);
+                dueBadge.classList.add('due-urgent');
+            }
+        }
+
+        renderDueBadge();
+
+        function openDuePicker() {
+            dueDateInput.value = item.due_date || '';
+            dueDateInput.classList.remove('hidden');
+            dueBadge.classList.add('hidden');
+            dueDateInput.showPicker?.();
+            dueDateInput.focus();
+        }
+
+        async function saveDueDate(val) {
+            dueDateInput.classList.add('hidden');
+            const newDate = val || null;
+            item.due_date = newDate;
+            updateGlobalTodo(item.id, { due_date: newDate });
+            renderDueBadge();
+            try {
+                const res = await fetch(`/api/todos/${item.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ due_date: newDate || '' })
+                });
+                if (res.status === 401) window.location.reload();
+            } catch (err) { console.error('Failed to save due date', err); }
+        }
+
+        dueDateInput.addEventListener('change', (e) => { saveDueDate(e.target.value); });
+        dueDateInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { dueDateInput.classList.add('hidden'); renderDueBadge(); }
+            if (e.key === 'Enter') { saveDueDate(e.target.value); }
+        });
+
+        const setDueDateBtn = clone.querySelector('.action-btn.set-due-date');
+        setDueDateBtn.addEventListener('click', (e) => { e.stopPropagation(); openDuePicker(); });
+
         const toggleBtn = clone.querySelector('.toggle-children');
         const childList = clone.querySelector('.nested-list');
 
@@ -911,10 +995,12 @@ document.addEventListener('DOMContentLoaded', () => {
             descIndicator.classList.remove('hidden');
         }
 
-        descToggleBtn.addEventListener('click', (e) => {
+        const toggleDesc = (e) => {
             e.stopPropagation();
             descPanel.classList.toggle('hidden');
-        });
+        };
+        descToggleBtn.addEventListener('click', toggleDesc);
+        descIndicator.addEventListener('click', toggleDesc);
 
         descEditBtn.addEventListener('click', () => {
             descContent.contentEditable = true;

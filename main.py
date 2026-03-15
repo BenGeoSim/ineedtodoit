@@ -84,6 +84,7 @@ class TodoCreate(BaseModel):
     tags: List[str] = []
     priority: int = 3
     space_id: Optional[str] = None
+    due_date: Optional[str] = None
 
 class TodoUpdate(BaseModel):
     text: Optional[str] = None
@@ -92,6 +93,7 @@ class TodoUpdate(BaseModel):
     deleted: Optional[bool] = None
     tags: Optional[List[str]] = None
     priority: Optional[int] = None
+    due_date: Optional[str] = None
 
 class SharedSpaceCreate(BaseModel):
     name: str = "Shared Space"
@@ -261,7 +263,8 @@ def get_todos(space_id: Optional[str] = None, user: dict = Depends(get_current_u
             "created_at": r["created_at"],
             "updated_at": r["updated_at"],
             "creator_name": r["creator_name"] if "creator_name" in r.keys() else None,
-            "creator_email": r["creator_email"] if "creator_email" in r.keys() else None
+            "creator_email": r["creator_email"] if "creator_email" in r.keys() else None,
+            "due_date": r["due_date"] if "due_date" in r.keys() else None
         })
     return todos
 
@@ -287,8 +290,8 @@ def create_todo(todo: TodoCreate, user: dict = Depends(get_current_user)):
             
     try:
         conn.execute(
-            "INSERT INTO todos (id, user_id, parent_id, text, description, completed, deleted, tags, priority, space_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (todo.id, user["id"], todo.parent_id, todo.text, todo.description, todo.completed, todo.deleted, json.dumps(todo.tags), todo.priority, todo.space_id)
+            "INSERT INTO todos (id, user_id, parent_id, text, description, completed, deleted, tags, priority, space_id, due_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (todo.id, user["id"], todo.parent_id, todo.text, todo.description, todo.completed, todo.deleted, json.dumps(todo.tags), todo.priority, todo.space_id, todo.due_date)
         )
         conn.commit()
     except Exception as e:
@@ -317,25 +320,29 @@ def update_todo(todo_id: str, todo_update: TodoUpdate, user: dict = Depends(get_
     new_completed = todo_update.completed if todo_update.completed is not None else row["completed"]
     new_deleted = todo_update.deleted if todo_update.deleted is not None else row["deleted"]
     new_priority = todo_update.priority if todo_update.priority is not None else row["priority"]
-    
+    new_due_date = todo_update.due_date if todo_update.due_date is not None else (row["due_date"] if "due_date" in row.keys() else None)
+    # Allow explicitly clearing due_date by sending empty string
+    if todo_update.due_date == '':
+        new_due_date = None
+
     if todo_update.tags is not None:
         new_tags_json = json.dumps(todo_update.tags)
     else:
         new_tags_json = row["tags"]
-    
+
     conn.execute(
-        "UPDATE todos SET text = ?, description = ?, completed = ?, deleted = ?, tags = ?, priority = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-        (new_text, new_description, 1 if new_completed else 0, 1 if new_deleted else 0, new_tags_json, new_priority, todo_id)
+        "UPDATE todos SET text = ?, description = ?, completed = ?, deleted = ?, tags = ?, priority = ?, due_date = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        (new_text, new_description, 1 if new_completed else 0, 1 if new_deleted else 0, new_tags_json, new_priority, new_due_date, todo_id)
     )
     conn.commit()
     conn.close()
-    
+
     try:
         new_tags = json.loads(new_tags_json)
     except:
         new_tags = []
-        
-    return {"id": todo_id, "text": new_text, "description": new_description, "completed": new_completed, "deleted": new_deleted, "tags": new_tags, "priority": new_priority, "space_id": row["space_id"]}
+
+    return {"id": todo_id, "text": new_text, "description": new_description, "completed": new_completed, "deleted": new_deleted, "tags": new_tags, "priority": new_priority, "space_id": row["space_id"], "due_date": new_due_date}
 
 @app.delete("/api/todos/{todo_id}")
 def delete_todo(todo_id: str, user: dict = Depends(get_current_user)):

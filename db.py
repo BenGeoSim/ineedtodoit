@@ -123,6 +123,8 @@ def init_db():
         conn.execute("UPDATE todos SET updated_at = created_at")
     if "description" not in columns:
         conn.execute("ALTER TABLE todos ADD COLUMN description TEXT DEFAULT ''")
+    if "due_date" not in columns:
+        conn.execute("ALTER TABLE todos ADD COLUMN due_date TEXT DEFAULT NULL")
     # Migration: Add role column to users if it doesn't exist
     user_columns = [info['name'] for info in conn.execute("PRAGMA table_info(users)").fetchall()]
     if 'role' not in user_columns:

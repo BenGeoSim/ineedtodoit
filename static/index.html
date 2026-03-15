@@ -129,13 +129,15 @@
                 </div>
                 <!-- Priority Dot -->
                 <div class="priority-dot" title="Cycle Priority"></div>
-                <!-- Creator Badge -->
-                <div class="creator-badge hidden" title="Created by"></div>
                 <span class="text" contenteditable="false"></span>
                 <div class="tag-badges"></div>
-                <span class="description-indicator hidden" title="Has description">
-                    <ion-icon name="document-text-outline"></ion-icon>
-                </span>
+                <button class="description-indicator hidden" title="View note">
+                    <ion-icon name="document-text-outline"></ion-icon> note
+                </button>
+                <span class="due-date-badge hidden" title="Due date"></span>
+                <input type="date" class="due-date-input hidden">
+                <!-- Creator Badge -->
+                <div class="creator-badge hidden" title="Created by"></div>
                 <div class="task-menu-wrapper">
                     <button class="action-btn task-menu-btn" title="Task actions">
                         <ion-icon name="ellipsis-vertical-outline"></ion-icon>
@@ -155,6 +157,9 @@
                         </button>
                         <button class="action-btn restore hidden" title="Restore task">
                             <ion-icon name="arrow-undo-outline"></ion-icon>
+                        </button>
+                        <button class="action-btn set-due-date" title="Set due date">
+                            <ion-icon name="calendar-outline"></ion-icon>
                         </button>
                         <button class="action-btn delete" title="Delete task">
                             <ion-icon name="trash-outline"></ion-icon>
