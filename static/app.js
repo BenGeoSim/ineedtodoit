@@ -276,6 +276,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (a.priority !== b.priority) {
                     return (a.priority || 3) - (b.priority || 3);
                 }
+            } else if (sortBy === 'due_date') {
+                // Tasks with no due date go to the bottom
+                const aDate = a.due_date || null;
+                const bDate = b.due_date || null;
+                if (aDate && bDate) return aDate.localeCompare(bDate);
+                if (aDate) return -1;
+                if (bDate) return 1;
             }
             // Default to created_at
             return (a.created_at || '').localeCompare(b.created_at || '');
@@ -492,7 +499,8 @@ document.addEventListener('DOMContentLoaded', () => {
         sortContainer.innerHTML = '';
         const options = [
             { id: 'created', label: 'Created Date' },
-            { id: 'priority', label: 'Priority' }
+            { id: 'priority', label: 'Priority' },
+            { id: 'due_date', label: 'Due Date' }
         ];
 
         options.forEach(opt => {
