@@ -435,7 +435,7 @@ ul.expanded {
 .task-controls {
     display: flex;
     align-items: center;
-    gap: 0px;
+    gap: 4px;
     flex-shrink: 0;
 }
 
