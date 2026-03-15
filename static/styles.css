@@ -410,13 +410,11 @@ ul.expanded {
     font-size: 1.1rem;
 }
 
-.todo-content>.action-btn.add-child {
+.task-controls .action-btn.add-child {
     width: 24px;
     height: 24px;
     font-size: 0.85rem;
     border-radius: 6px;
-    margin-left: -9px;
-    margin-right: 6px;
 }
 
 .action-btn:hover {
@@ -431,6 +429,13 @@ ul.expanded {
 .action-btn.add-child:hover {
     background: var(--accent);
     color: white;
+}
+
+.task-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
 }
 
 .checkbox {
@@ -980,6 +985,16 @@ body.trash-mode #tag-filters {
 
     .todo-content {
         flex-wrap: wrap;
+    }
+
+    .task-controls {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .task-controls .action-btn.add-child {
+        margin-left: 0;
+        margin-right: 0;
     }
 
     .tag-badges {

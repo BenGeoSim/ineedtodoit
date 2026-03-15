@@ -124,14 +124,16 @@
                 <div class="toggle-children hidden" aria-label="Toggle nested items">
                     <ion-icon name="chevron-forward-outline"></ion-icon>
                 </div>
-                <div class="checkbox">
-                    <ion-icon class="check-icon" name="checkmark-outline"></ion-icon>
+                <div class="task-controls">
+                    <div class="checkbox">
+                        <ion-icon class="check-icon" name="checkmark-outline"></ion-icon>
+                    </div>
+                    <button class="action-btn add-child" title="Add nested task">
+                        <ion-icon name="return-down-forward-outline"></ion-icon>
+                    </button>
+                    <!-- Priority Dot -->
+                    <div class="priority-dot" title="Cycle Priority"></div>
                 </div>
-                <button class="action-btn add-child" title="Add nested task">
-                    <ion-icon name="return-down-forward-outline"></ion-icon>
-                </button>
-                <!-- Priority Dot -->
-                <div class="priority-dot" title="Cycle Priority"></div>
                 <span class="text" contenteditable="false"></span>
                 <div class="tag-badges"></div>
                 <button class="description-indicator hidden" title="View note">
