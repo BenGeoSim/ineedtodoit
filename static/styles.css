@@ -447,7 +447,7 @@ ul.expanded {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 16px;
+    margin-right: 8px;
     cursor: pointer;
     transition: var(--transition);
     flex-shrink: 0;
