@@ -731,6 +731,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const setDueDateBtn = clone.querySelector('.action-btn.set-due-date');
         setDueDateBtn.addEventListener('click', (e) => { e.stopPropagation(); openDuePicker(); });
 
+        const moveToSpaceBtn = clone.querySelector('.action-btn.move-to-space');
+        moveToSpaceBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            taskMenuWrapper.classList.remove('open');
+            openMoveSpaceDialog(item);
+        });
+
         const toggleBtn = clone.querySelector('.toggle-children');
         const childList = clone.querySelector('.nested-list');
 
@@ -1399,6 +1406,51 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') submitAddMemberBtn.click();
             if (e.key === 'Escape') cancelAddMemberBtn.click();
         });
+    }
+
+    // Move to Space Dialog
+    const moveSpaceOverlay = document.getElementById('move-space-overlay');
+    const moveSpaceList = document.getElementById('move-space-list');
+    const cancelMoveSpaceBtn = document.getElementById('cancel-move-space-btn');
+
+    cancelMoveSpaceBtn.addEventListener('click', () => moveSpaceOverlay.classList.add('hidden'));
+
+    function openMoveSpaceDialog(item) {
+        moveSpaceList.innerHTML = '';
+
+        const destinations = [
+            { id: null, name: 'Personal Tasks', icon: 'person-outline' },
+            ...sharedSpaces.map(s => ({ id: s.id, name: s.name, icon: 'people-outline' }))
+        ].filter(d => d.id !== currentSpaceId);
+
+        if (destinations.length === 0) {
+            moveSpaceList.innerHTML = '<p style="color:var(--text-muted);font-size:0.9rem;">No other spaces available.</p>';
+        } else {
+            destinations.forEach(dest => {
+                const btn = document.createElement('button');
+                btn.className = 'dropdown-item';
+                btn.style.cssText = 'width:100%;justify-content:flex-start;gap:10px;padding:10px 14px;border-radius:10px;';
+                btn.innerHTML = `<ion-icon name="${dest.icon}"></ion-icon> <span>${dest.name}</span>`;
+                btn.addEventListener('click', async () => {
+                    moveSpaceOverlay.classList.add('hidden');
+                    try {
+                        const res = await fetch(`/api/todos/${item.id}/move`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'same-origin',
+                            body: JSON.stringify({ space_id: dest.id })
+                        });
+                        if (!res.ok) throw new Error((await res.json()).detail || 'Failed');
+                        // Remove from current view
+                        todos = todos.filter(t => t.id !== item.id);
+                        render();
+                    } catch (e) { alert(e.message); }
+                });
+                moveSpaceList.appendChild(btn);
+            });
+        }
+
+        moveSpaceOverlay.classList.remove('hidden');
     }
 
     // XML Export

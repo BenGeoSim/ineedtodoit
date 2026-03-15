@@ -410,6 +410,15 @@ ul.expanded {
     font-size: 1.1rem;
 }
 
+.todo-content>.action-btn.add-child {
+    width: 24px;
+    height: 24px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    margin-left: -9px;
+    margin-right: 6px;
+}
+
 .action-btn:hover {
     background: rgba(255, 255, 255, 0.2);
 }

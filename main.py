@@ -15,6 +15,7 @@ from typing import Optional, List
 
 GOOGLE_CLIENT_ID = "99993409666-hstadhmvo49nkmjg8u9cr6fvjjo05hli.apps.googleusercontent.com"
 
+
 import db
 
 import asyncio
@@ -104,6 +105,9 @@ class SharedSpaceUpdate(BaseModel):
 
 class SpaceMemberAdd(BaseModel):
     email: str
+
+class TodoMove(BaseModel):
+    space_id: Optional[str] = None  # None = personal space
 
 class SettingsUpdate(BaseModel):
     max_users: int
@@ -423,7 +427,6 @@ def create_shared_space(req: SharedSpaceCreate, user: dict = Depends(get_current
     conn.execute("INSERT OR IGNORE INTO space_members (space_id, user_id) VALUES (?, ?)", (space_id, other_user["id"]))
     conn.commit()
     conn.close()
-
     return {"id": space_id, "status": "created"}
 
 @app.put("/api/shared_spaces/{space_id}")
@@ -485,6 +488,56 @@ def add_space_member(space_id: str, req: SpaceMemberAdd, user: dict = Depends(ge
     conn.commit()
     conn.close()
     return {"status": "added"}
+
+@app.post("/api/todos/{todo_id}/move")
+def move_todo(todo_id: str, req: TodoMove, user: dict = Depends(get_current_user)):
+    conn = db.get_db()
+
+    # Verify user owns or has access to the todo
+    row = conn.execute('''
+        SELECT t.* FROM todos t
+        LEFT JOIN space_members sm ON t.space_id = sm.space_id AND sm.user_id = ?
+        WHERE t.id = ? AND ((t.space_id IS NULL AND t.user_id = ?) OR (t.space_id IS NOT NULL AND sm.user_id IS NOT NULL))
+    ''', (user["id"], todo_id, user["id"])).fetchone()
+    if not row:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Todo not found or not authorized")
+
+    # Verify access to destination space
+    if req.space_id:
+        dest = conn.execute(
+            "SELECT ss.id FROM shared_spaces ss JOIN space_members sm ON ss.id = sm.space_id WHERE ss.id = ? AND sm.user_id = ?",
+            (req.space_id, user["id"])
+        ).fetchone()
+        if not dest:
+            conn.close()
+            raise HTTPException(status_code=403, detail="Not authorized for destination space")
+
+    # Recursively collect all descendant IDs
+    def get_descendant_ids(parent_id):
+        ids = [parent_id]
+        children = conn.execute("SELECT id FROM todos WHERE parent_id = ?", (parent_id,)).fetchall()
+        for child in children:
+            ids.extend(get_descendant_ids(child["id"]))
+        return ids
+
+    all_ids = get_descendant_ids(todo_id)
+
+    # Move the root todo (detach from its parent when moving spaces)
+    conn.execute(
+        "UPDATE todos SET space_id = ?, parent_id = NULL, user_id = ? WHERE id = ?",
+        (req.space_id, user["id"], todo_id)
+    )
+    # Move all descendants (keep their parent relationships intact)
+    for desc_id in all_ids[1:]:
+        conn.execute(
+            "UPDATE todos SET space_id = ?, user_id = ? WHERE id = ?",
+            (req.space_id, user["id"], desc_id)
+        )
+
+    conn.commit()
+    conn.close()
+    return {"status": "moved", "space_id": req.space_id}
 
 # Admin Routes
 @app.get("/api/admin/users")

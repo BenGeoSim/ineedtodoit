@@ -127,6 +127,9 @@
                 <div class="checkbox">
                     <ion-icon class="check-icon" name="checkmark-outline"></ion-icon>
                 </div>
+                <button class="action-btn add-child" title="Add nested task">
+                    <ion-icon name="return-down-forward-outline"></ion-icon>
+                </button>
                 <!-- Priority Dot -->
                 <div class="priority-dot" title="Cycle Priority"></div>
                 <span class="text" contenteditable="false"></span>
@@ -149,9 +152,6 @@
                         <button class="action-btn add-tag" title="Add tag">
                             <ion-icon name="pricetag-outline"></ion-icon>
                         </button>
-                        <button class="action-btn add-child" title="Add nested task">
-                            <ion-icon name="return-down-forward-outline"></ion-icon>
-                        </button>
                         <button class="action-btn edit" title="Edit task">
                             <ion-icon name="pencil-outline"></ion-icon>
                         </button>
@@ -160,6 +160,9 @@
                         </button>
                         <button class="action-btn set-due-date" title="Set due date">
                             <ion-icon name="calendar-outline"></ion-icon>
+                        </button>
+                        <button class="action-btn move-to-space" title="Move to space">
+                            <ion-icon name="arrow-redo-outline"></ion-icon>
                         </button>
                         <button class="action-btn delete" title="Delete task">
                             <ion-icon name="trash-outline"></ion-icon>
@@ -242,6 +245,16 @@
                     <button id="cancel-invite-btn" class="secondary-btn" style="flex: 1;">Cancel</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Move to Space Dialog Overlay -->
+    <div id="move-space-overlay" class="login-overlay hidden">
+        <div class="login-card">
+            <h2>Move to Space</h2>
+            <p>Select a destination space for this task and its subtasks.</p>
+            <div id="move-space-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
+            <button id="cancel-move-space-btn" class="secondary-btn" style="width:100%;">Cancel</button>
         </div>
     </div>
 
