@@ -415,7 +415,7 @@ ul.expanded {
     height: 24px;
     font-size: 0.85rem;
     border-radius: 6px;
-    margin-left: -4px;
+    margin-left: -8px;
 }
 
 .action-btn:hover {
