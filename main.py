@@ -100,6 +100,9 @@ class SharedSpaceCreate(BaseModel):
 class SharedSpaceUpdate(BaseModel):
     name: str
 
+class SpaceMemberAdd(BaseModel):
+    email: str
+
 class SettingsUpdate(BaseModel):
     max_users: int
 
@@ -133,7 +136,7 @@ async def get_current_admin(user: dict = Depends(get_current_user)):
 @app.post("/api/auth/google")
 def google_auth(request: GoogleAuthRequest, response: Response):
     try:
-        idinfo = id_token.verify_oauth2_token(request.credential, requests.Request(), GOOGLE_CLIENT_ID)
+        idinfo = id_token.verify_oauth2_token(request.credential, requests.Request(), GOOGLE_CLIENT_ID, clock_skew_in_seconds=30)
         
         user_id = idinfo['sub']
         email = idinfo['email']
@@ -217,7 +220,7 @@ def get_todos(space_id: Optional[str] = None, user: dict = Depends(get_current_u
     
     if space_id:
         # verify access to space
-        space = conn.execute("SELECT id FROM shared_spaces WHERE id = ? AND (user1_id = ? OR user2_id = ?)", (space_id, user["id"], user["id"])).fetchone()
+        space = conn.execute("SELECT ss.id FROM shared_spaces ss JOIN space_members sm ON ss.id = sm.space_id WHERE ss.id = ? AND sm.user_id = ?", (space_id, user["id"])).fetchone()
         if not space:
             conn.close()
             raise HTTPException(status_code=403, detail="Not authorized for this space")
@@ -267,7 +270,7 @@ def create_todo(todo: TodoCreate, user: dict = Depends(get_current_user)):
     conn = db.get_db()
     
     if todo.space_id:
-        space = conn.execute("SELECT id FROM shared_spaces WHERE id = ? AND (user1_id = ? OR user2_id = ?)", (todo.space_id, user["id"], user["id"])).fetchone()
+        space = conn.execute("SELECT ss.id FROM shared_spaces ss JOIN space_members sm ON ss.id = sm.space_id WHERE ss.id = ? AND sm.user_id = ?", (todo.space_id, user["id"])).fetchone()
         if not space:
             conn.close()
             raise HTTPException(status_code=403, detail="Not authorized for this space")
@@ -299,9 +302,9 @@ def update_todo(todo_id: str, todo_update: TodoUpdate, user: dict = Depends(get_
     conn = db.get_db()
     cursor = conn.execute('''
         SELECT t.* FROM todos t
-        LEFT JOIN shared_spaces ss ON t.space_id = ss.id
-        WHERE t.id = ? AND ((t.space_id IS NULL AND t.user_id = ?) OR (t.space_id IS NOT NULL AND (ss.user1_id = ? OR ss.user2_id = ?)))
-    ''', (todo_id, user["id"], user["id"], user["id"]))
+        LEFT JOIN space_members sm ON t.space_id = sm.space_id AND sm.user_id = ?
+        WHERE t.id = ? AND ((t.space_id IS NULL AND t.user_id = ?) OR (t.space_id IS NOT NULL AND sm.user_id IS NOT NULL))
+    ''', (user["id"], todo_id, user["id"]))
     row = cursor.fetchone()
     if row is None:
         conn.close()
@@ -340,9 +343,9 @@ def delete_todo(todo_id: str, user: dict = Depends(get_current_user)):
     # verify ownership or shared space
     row = conn.execute('''
         SELECT t.id FROM todos t
-        LEFT JOIN shared_spaces ss ON t.space_id = ss.id
-        WHERE t.id = ? AND ((t.space_id IS NULL AND t.user_id = ?) OR (t.space_id IS NOT NULL AND (ss.user1_id = ? OR ss.user2_id = ?)))
-    ''', (todo_id, user["id"], user["id"], user["id"])).fetchone()
+        LEFT JOIN space_members sm ON t.space_id = sm.space_id AND sm.user_id = ?
+        WHERE t.id = ? AND ((t.space_id IS NULL AND t.user_id = ?) OR (t.space_id IS NOT NULL AND sm.user_id IS NOT NULL))
+    ''', (user["id"], todo_id, user["id"])).fetchone()
     if not row:
         conn.close()
         raise HTTPException(status_code=404, detail="Todo not found or not authorized")
@@ -356,19 +359,26 @@ def delete_todo(todo_id: str, user: dict = Depends(get_current_user)):
 def get_shared_spaces(user: dict = Depends(get_current_user)):
     conn = db.get_db()
     rows = conn.execute('''
-        SELECT ss.id, ss.name, ss.created_at, 
+        SELECT ss.id, ss.name, ss.created_at,
                u1.email as user1_email, u2.email as user2_email,
                u1.name as user1_name, u2.name as user2_name,
                u1.picture as user1_picture, u2.picture as user2_picture
         FROM shared_spaces ss
         JOIN users u1 ON ss.user1_id = u1.id
         JOIN users u2 ON ss.user2_id = u2.id
-        WHERE ss.user1_id = ? OR ss.user2_id = ?
-    ''', (user["id"], user["id"])).fetchall()
-    conn.close()
-    
+        JOIN space_members sm ON ss.id = sm.space_id
+        WHERE sm.user_id = ?
+    ''', (user["id"],)).fetchall()
+
     spaces = []
     for r in rows:
+        members = conn.execute('''
+            SELECT u.id, u.email, u.name, u.picture
+            FROM space_members sm
+            JOIN users u ON sm.user_id = u.id
+            WHERE sm.space_id = ?
+            ORDER BY sm.joined_at ASC
+        ''', (r["id"],)).fetchall()
         spaces.append({
             "id": r["id"],
             "name": r["name"],
@@ -379,9 +389,9 @@ def get_shared_spaces(user: dict = Depends(get_current_user)):
             "user2_name": r["user2_name"],
             "user1_picture": r["user1_picture"],
             "user2_picture": r["user2_picture"],
-            "user1_id": r["user1_id"] if "user1_id" in r.keys() else None,
-            "user2_id": r["user2_id"] if "user2_id" in r.keys() else None
+            "members": [{"id": m["id"], "email": m["email"], "name": m["name"], "picture": m["picture"]} for m in members]
         })
+    conn.close()
     return spaces
 
 @app.post("/api/shared_spaces")
@@ -402,9 +412,11 @@ def create_shared_space(req: SharedSpaceCreate, user: dict = Depends(get_current
         "INSERT INTO shared_spaces (id, name, user1_id, user2_id) VALUES (?, ?, ?, ?)",
         (space_id, req.name, user["id"], other_user["id"])
     )
+    conn.execute("INSERT OR IGNORE INTO space_members (space_id, user_id) VALUES (?, ?)", (space_id, user["id"]))
+    conn.execute("INSERT OR IGNORE INTO space_members (space_id, user_id) VALUES (?, ?)", (space_id, other_user["id"]))
     conn.commit()
     conn.close()
-    
+
     return {"id": space_id, "status": "created"}
 
 @app.put("/api/shared_spaces/{space_id}")
@@ -413,8 +425,8 @@ def update_shared_space(space_id: str, req: SharedSpaceUpdate, user: dict = Depe
     
     # Verify user is part of the space
     space = conn.execute(
-        "SELECT id FROM shared_spaces WHERE id = ? AND (user1_id = ? OR user2_id = ?)",
-        (space_id, user["id"], user["id"])
+        "SELECT ss.id FROM shared_spaces ss JOIN space_members sm ON ss.id = sm.space_id WHERE ss.id = ? AND sm.user_id = ?",
+        (space_id, user["id"])
     ).fetchone()
     
     if not space:
@@ -429,6 +441,43 @@ def update_shared_space(space_id: str, req: SharedSpaceUpdate, user: dict = Depe
     conn.close()
     
     return {"status": "success", "name": req.name}
+
+@app.post("/api/shared_spaces/{space_id}/members")
+def add_space_member(space_id: str, req: SpaceMemberAdd, user: dict = Depends(get_current_user)):
+    conn = db.get_db()
+
+    membership = conn.execute(
+        "SELECT 1 FROM space_members WHERE space_id = ? AND user_id = ?",
+        (space_id, user["id"])
+    ).fetchone()
+    if not membership:
+        conn.close()
+        raise HTTPException(status_code=403, detail="Not authorized for this space")
+
+    if req.email == user["email"]:
+        conn.close()
+        raise HTTPException(status_code=400, detail="Cannot add yourself")
+
+    new_user = conn.execute("SELECT id FROM users WHERE email = ?", (req.email,)).fetchone()
+    if not new_user:
+        conn.close()
+        raise HTTPException(status_code=404, detail="User not found. They must sign in first.")
+
+    existing = conn.execute(
+        "SELECT 1 FROM space_members WHERE space_id = ? AND user_id = ?",
+        (space_id, new_user["id"])
+    ).fetchone()
+    if existing:
+        conn.close()
+        raise HTTPException(status_code=400, detail="User is already a member")
+
+    conn.execute(
+        "INSERT INTO space_members (space_id, user_id) VALUES (?, ?)",
+        (space_id, new_user["id"])
+    )
+    conn.commit()
+    conn.close()
+    return {"status": "added"}
 
 # Admin Routes
 @app.get("/api/admin/users")

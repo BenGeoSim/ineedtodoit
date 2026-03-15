@@ -56,6 +56,27 @@ def init_db():
     ''')
 
     conn.execute('''
+        CREATE TABLE IF NOT EXISTS space_members (
+            space_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (space_id, user_id),
+            FOREIGN KEY(space_id) REFERENCES shared_spaces(id) ON DELETE CASCADE,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    ''')
+
+    # Migrate existing spaces into space_members
+    conn.execute('''
+        INSERT OR IGNORE INTO space_members (space_id, user_id)
+        SELECT id, user1_id FROM shared_spaces
+    ''')
+    conn.execute('''
+        INSERT OR IGNORE INTO space_members (space_id, user_id)
+        SELECT id, user2_id FROM shared_spaces
+    ''')
+
+    conn.execute('''
         CREATE TABLE IF NOT EXISTS todos (
             id TEXT PRIMARY KEY,
             user_id TEXT NOT NULL,

@@ -365,17 +365,34 @@ ul.expanded {
     border-color: rgba(255, 255, 255, 0.15);
 }
 
-/* Visibility of actions only on hover */
-.actions {
-    display: flex;
-    gap: 8px;
-    opacity: 0;
-    transition: var(--transition);
+/* Task hamburger menu */
+.task-menu-wrapper {
+    position: relative;
     margin-left: auto;
+    flex-shrink: 0;
 }
 
-.todo-content:hover .actions {
-    opacity: 1;
+
+.actions {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 8px;
+    z-index: 50;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    min-width: 44px;
+    align-items: center;
+}
+
+.task-menu-wrapper.open .actions {
+    display: flex;
 }
 
 /* Mobile styles moved to bottom */
@@ -747,6 +764,15 @@ body.trash-mode #tag-filters {
     color: #c7d2fe;
 }
 
+/* Hide tags on tasks when toggled */
+.tags-hidden .tag-badges {
+    display: none;
+}
+
+#toggle-tags-btn.tags-hidden-active {
+    color: var(--accent);
+}
+
 /* Item Tags */
 .tag-badges {
     display: flex;
@@ -898,13 +924,10 @@ body.trash-mode #tag-filters {
         order: 3;
     }
 
+
     .actions {
-        opacity: 1;
-        width: 100%;
-        margin-left: 0;
-        margin-top: 8px;
-        justify-content: flex-end;
-        order: 4;
+        right: auto;
+        left: 0;
     }
 
     .nested-list {

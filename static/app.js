@@ -23,6 +23,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let sortBy = getSortPreference();
 
+    // Tags visibility toggle
+    let tagsHidden = localStorage.getItem('tags_hidden') === 'true';
+
+    function applyTagsVisibility() {
+        listEl.classList.toggle('tags-hidden', tagsHidden);
+        const btn = document.getElementById('toggle-tags-btn');
+        if (btn) {
+            btn.classList.toggle('tags-hidden-active', tagsHidden);
+            btn.title = tagsHidden ? 'Show tags on tasks' : 'Hide tags on tasks';
+        }
+    }
+
+    applyTagsVisibility();
+
     const setSortPreference = (val) => {
         sortBy = val;
         const key = `sort_pref_${currentSpaceId || 'personal'}`;
@@ -82,16 +96,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const renameBtn = document.getElementById('rename-space-btn');
         if (!taglineEl) return;
 
+        const addMemberBtn = document.getElementById('add-member-btn');
         if (currentSpaceId === null) {
             taglineEl.textContent = 'Limitless nesting, seamless syncing.';
             if (renameBtn) renameBtn.classList.add('hidden');
+            if (addMemberBtn) addMemberBtn.classList.add('hidden');
         } else {
             const space = sharedSpaces.find(s => s.id === currentSpaceId);
             if (space) {
-                const u1 = space.user1_name || space.user1_email;
-                const u2 = space.user2_name || space.user2_email;
-                taglineEl.textContent = `${space.name} • Shared between ${u1} and ${u2}`;
+                const members = space.members || [
+                    { name: space.user1_name, email: space.user1_email },
+                    { name: space.user2_name, email: space.user2_email }
+                ];
+                const names = members.map(m => m.name || m.email).join(', ');
+                taglineEl.textContent = `${space.name} • ${names}`;
                 if (renameBtn) renameBtn.classList.remove('hidden');
+                if (addMemberBtn) addMemberBtn.classList.remove('hidden');
             }
         }
     }
@@ -371,6 +391,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         filterContainer.style.display = 'flex';
+
+        // Add toggle-tags button
+        const toggleBtn = document.createElement('button');
+        toggleBtn.id = 'toggle-tags-btn';
+        toggleBtn.className = 'action-btn';
+        toggleBtn.innerHTML = '<ion-icon name="pricetag-outline"></ion-icon>';
+        toggleBtn.style.fontSize = '1.1rem';
+        toggleBtn.classList.toggle('tags-hidden-active', tagsHidden);
+        toggleBtn.title = tagsHidden ? 'Show tags on tasks' : 'Hide tags on tasks';
+        toggleBtn.addEventListener('click', () => {
+            tagsHidden = !tagsHidden;
+            localStorage.setItem('tags_hidden', tagsHidden);
+            applyTagsVisibility();
+        });
+        filterContainer.appendChild(toggleBtn);
 
         // Add "All tags" badge
         const allBadge = document.createElement('span');
@@ -677,6 +712,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateGlobalTodo(item.id, { completed: !newCompleted });
                 li.classList.toggle('completed', !newCompleted);
                 alert('Failed to save completion status.');
+            }
+        });
+
+        // Task hamburger menu toggle
+        const taskMenuWrapper = clone.querySelector('.task-menu-wrapper');
+        const taskMenuBtn = clone.querySelector('.task-menu-btn');
+        const actionsEl = clone.querySelector('.actions');
+
+        taskMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = taskMenuWrapper.classList.toggle('open');
+            if (isOpen) {
+                // Close any other open menus
+                document.querySelectorAll('.task-menu-wrapper.open').forEach(w => {
+                    if (w !== taskMenuWrapper) w.classList.remove('open');
+                });
+            }
+        });
+
+        // Close menu when an action button inside is clicked
+        actionsEl.addEventListener('click', () => {
+            taskMenuWrapper.classList.remove('open');
+        });
+
+        // Close on outside click (delegated at document level, attached per item)
+        document.addEventListener('click', (e) => {
+            if (!taskMenuWrapper.contains(e.target)) {
+                taskMenuWrapper.classList.remove('open');
             }
         });
 
@@ -1194,6 +1257,61 @@ document.addEventListener('DOMContentLoaded', () => {
         renameNameInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') submitRenameBtn.click();
             if (e.key === 'Escape') cancelRenameBtn.click();
+        });
+    }
+
+    // Add Member Dialog
+    const addMemberOverlay = document.getElementById('add-member-overlay');
+    const addMemberBtnEl = document.getElementById('add-member-btn');
+    const cancelAddMemberBtn = document.getElementById('cancel-add-member-btn');
+    const submitAddMemberBtn = document.getElementById('submit-add-member-btn');
+    const addMemberEmailInput = document.getElementById('add-member-email');
+
+    if (addMemberBtnEl) {
+        addMemberBtnEl.addEventListener('click', () => {
+            document.getElementById('space-dropdown-menu').classList.remove('show');
+            addMemberEmailInput.value = '';
+            addMemberOverlay.classList.remove('hidden');
+            addMemberEmailInput.focus();
+        });
+    }
+
+    if (cancelAddMemberBtn) {
+        cancelAddMemberBtn.addEventListener('click', () => {
+            addMemberOverlay.classList.add('hidden');
+        });
+    }
+
+    if (submitAddMemberBtn) {
+        submitAddMemberBtn.addEventListener('click', async () => {
+            if (!currentSpaceId) return;
+            const email = addMemberEmailInput.value.trim();
+            if (!email) return;
+            try {
+                submitAddMemberBtn.disabled = true;
+                submitAddMemberBtn.textContent = 'Adding...';
+                const res = await fetch(`/api/shared_spaces/${currentSpaceId}/members`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Failed');
+                await fetchSpaces();
+                updateTagline();
+                addMemberOverlay.classList.add('hidden');
+            } catch (e) {
+                alert(e.message);
+            } finally {
+                submitAddMemberBtn.disabled = false;
+                submitAddMemberBtn.textContent = 'Add';
+            }
+        });
+
+        addMemberEmailInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') submitAddMemberBtn.click();
+            if (e.key === 'Escape') cancelAddMemberBtn.click();
         });
     }
 

@@ -44,8 +44,11 @@
                 <button id="rename-space-btn" class="dropdown-item hidden" title="Rename current space">
                     <ion-icon name="pencil-outline"></ion-icon> <span>Rename Space</span>
                 </button>
+                <button id="add-member-btn" class="dropdown-item hidden" title="Add a member to this space">
+                    <ion-icon name="person-add-outline"></ion-icon> <span>Add Member</span>
+                </button>
                 <button id="invite-btn" class="dropdown-item" title="Invite a user to a new shared space">
-                    <ion-icon name="person-add-outline"></ion-icon> <span>Create Shared Space</span>
+                    <ion-icon name="people-outline"></ion-icon> <span>Create Shared Space</span>
                 </button>
             </div>
         </div>
@@ -133,25 +136,30 @@
                 <span class="description-indicator hidden" title="Has description">
                     <ion-icon name="document-text-outline"></ion-icon>
                 </span>
-                <div class="actions">
-                    <button class="action-btn description-toggle" title="View/edit description">
-                        <ion-icon name="document-text-outline"></ion-icon>
+                <div class="task-menu-wrapper">
+                    <button class="action-btn task-menu-btn" title="Task actions">
+                        <ion-icon name="ellipsis-vertical-outline"></ion-icon>
                     </button>
-                    <button class="action-btn add-tag" title="Add tag">
-                        <ion-icon name="pricetag-outline"></ion-icon>
-                    </button>
-                    <button class="action-btn add-child" title="Add nested task">
-                        <ion-icon name="return-down-forward-outline"></ion-icon>
-                    </button>
-                    <button class="action-btn edit" title="Edit task">
-                        <ion-icon name="pencil-outline"></ion-icon>
-                    </button>
-                    <button class="action-btn restore hidden" title="Restore task">
-                        <ion-icon name="arrow-undo-outline"></ion-icon>
-                    </button>
-                    <button class="action-btn delete" title="Delete task">
-                        <ion-icon name="trash-outline"></ion-icon>
-                    </button>
+                    <div class="actions task-menu-dropdown">
+                        <button class="action-btn description-toggle" title="View/edit description">
+                            <ion-icon name="document-text-outline"></ion-icon>
+                        </button>
+                        <button class="action-btn add-tag" title="Add tag">
+                            <ion-icon name="pricetag-outline"></ion-icon>
+                        </button>
+                        <button class="action-btn add-child" title="Add nested task">
+                            <ion-icon name="return-down-forward-outline"></ion-icon>
+                        </button>
+                        <button class="action-btn edit" title="Edit task">
+                            <ion-icon name="pencil-outline"></ion-icon>
+                        </button>
+                        <button class="action-btn restore hidden" title="Restore task">
+                            <ion-icon name="arrow-undo-outline"></ion-icon>
+                        </button>
+                        <button class="action-btn delete" title="Delete task">
+                            <ion-icon name="trash-outline"></ion-icon>
+                        </button>
+                    </div>
                 </div>
             </div>
             <!-- Description Panel (hidden by default) -->
@@ -227,6 +235,23 @@
                 <div style="display: flex; gap: 10px; width: 100%;">
                     <button id="submit-invite-btn" class="primary-btn" style="flex: 1;">Create</button>
                     <button id="cancel-invite-btn" class="secondary-btn" style="flex: 1;">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Member Dialog Overlay -->
+    <div id="add-member-overlay" class="login-overlay hidden">
+        <div class="login-card">
+            <h2>Add Member</h2>
+            <p>Enter the email of the person to add to this space.</p>
+            <div class="input-group"
+                style="padding: 0; box-shadow: none; background: transparent; flex-direction: column;">
+                <input type="email" id="add-member-email" placeholder="Email address"
+                    style="width: 100%; margin-bottom: 10px;">
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button id="submit-add-member-btn" class="primary-btn" style="flex: 1;">Add</button>
+                    <button id="cancel-add-member-btn" class="secondary-btn" style="flex: 1;">Cancel</button>
                 </div>
             </div>
         </div>
