@@ -219,14 +219,41 @@
         <div class="login-card">
             <h2>Welcome Back</h2>
             <p>Sign in to sync your limitless tasks.</p>
-            <div id="g_id_onload"
-                data-client_id="99993409666-hstadhmvo49nkmjg8u9cr6fvjjo05hli.apps.googleusercontent.com"
-                data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse"
-                data-auto_prompt="false">
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="google">Google</button>
+                <button class="auth-tab" data-tab="email">Email</button>
             </div>
 
-            <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
-                data-text="signin_with" data-size="large" data-logo_alignment="left">
+            <!-- Google tab -->
+            <div class="auth-panel" id="auth-panel-google">
+                <div id="g_id_onload"
+                    data-client_id="99993409666-hstadhmvo49nkmjg8u9cr6fvjjo05hli.apps.googleusercontent.com"
+                    data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse"
+                    data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline"
+                    data-text="signin_with" data-size="large" data-logo_alignment="left">
+                </div>
+            </div>
+
+            <!-- Email tab -->
+            <div class="auth-panel hidden" id="auth-panel-email">
+                <div class="auth-mode-toggle">
+                    <span id="auth-mode-label">Sign in</span> &nbsp;·&nbsp;
+                    <a href="#" id="auth-mode-switch">Create an account</a>
+                </div>
+                <div class="input-group" id="auth-name-group" style="display:none">
+                    <input type="text" id="auth-name" placeholder="Your name" autocomplete="name">
+                </div>
+                <div class="input-group">
+                    <input type="email" id="auth-email" placeholder="Email address" autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="auth-password" placeholder="Password" autocomplete="current-password">
+                </div>
+                <p id="auth-error" class="auth-error hidden"></p>
+                <button id="auth-submit-btn" class="btn-primary">Sign in</button>
             </div>
         </div>
     </div>

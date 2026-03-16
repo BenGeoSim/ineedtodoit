@@ -1,4 +1,5 @@
 import contextlib
+import hashlib
 import os
 import secrets
 from datetime import datetime, timedelta, timezone
@@ -115,6 +116,37 @@ class SettingsUpdate(BaseModel):
 class GoogleAuthRequest(BaseModel):
     credential: str
 
+class PasswordRegister(BaseModel):
+    name: str
+    email: str
+    password: str
+
+class PasswordLogin(BaseModel):
+    email: str
+    password: str
+
+def hash_password(password: str, salt: str) -> str:
+    dk = hashlib.pbkdf2_hmac('sha256', password.encode(), salt.encode(), 260000)
+    return dk.hex()
+
+def verify_password(password: str, stored: str) -> bool:
+    # stored format: salt$hash
+    parts = stored.split('$', 1)
+    if len(parts) != 2:
+        return False
+    salt, hashed = parts
+    return secrets.compare_digest(hash_password(password, salt), hashed)
+
+def create_session(response: Response, user_id: str):
+    session_token = secrets.token_urlsafe(32)
+    expires_at = (datetime.now(timezone.utc) + timedelta(days=7)).strftime('%Y-%m-%d %H:%M:%S')
+    conn = db.get_db()
+    conn.execute("INSERT INTO sessions (session_token, user_id, expires_at) VALUES (?, ?, ?)", (session_token, user_id, expires_at))
+    conn.commit()
+    conn.close()
+    response.set_cookie(key="session_token", value=session_token, httponly=True, max_age=7*24*60*60, samesite="lax", secure=False, path="/")
+    return session_token
+
 async def get_current_user(session_token: Optional[str] = Cookie(None)):
     if not session_token:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -176,33 +208,57 @@ def google_auth(request: GoogleAuthRequest, response: Response):
             # Re-fetch new user
             user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
             
-        # Create new session
-        session_token = secrets.token_urlsafe(32)
-        # expire in 7 days
-        expires_at = (datetime.now(timezone.utc) + timedelta(days=7)).strftime('%Y-%m-%d %H:%M:%S')
-        
-        conn.execute(
-            "INSERT INTO sessions (session_token, user_id, expires_at) VALUES (?, ?, ?)",
-            (session_token, user_id, expires_at)
-        )
-        conn.commit()
-        conn.close()
-        
-        # Set cookie
-        response.set_cookie(
-            key="session_token",
-            value=session_token,
-            httponly=True,
-            max_age=7 * 24 * 60 * 60, # 7 days
-            samesite="lax",
-            secure=False, # Set to True in production with HTTPS
-            path="/"
-        )
-        
+        create_session(response, user_id)
         return {"status": "success", "user": {"id": user_id, "name": name, "email": email, "picture": picture, "role": user["role"] if user else "user"}}
-        
+
     except ValueError as e:
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+
+@app.post("/api/auth/register")
+def password_register(req: PasswordRegister, response: Response):
+    if len(req.password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+
+    conn = db.get_db()
+
+    if conn.execute("SELECT id FROM users WHERE email = ?", (req.email,)).fetchone():
+        conn.close()
+        raise HTTPException(status_code=400, detail="An account with this email already exists")
+
+    max_users_row = conn.execute("SELECT value FROM settings WHERE key = 'max_users'").fetchone()
+    max_users_limit = int(max_users_row["value"]) if max_users_row else 10
+    user_count = conn.execute("SELECT COUNT(*) as count FROM users").fetchone()["count"]
+    if user_count >= max_users_limit:
+        conn.close()
+        raise HTTPException(status_code=403, detail="User limit reached. Cannot register new users.")
+
+    import uuid
+    user_id = str(uuid.uuid4())
+    new_role = "admin" if user_count == 0 else "user"
+    salt = secrets.token_hex(16)
+    pw_hash = f"{salt}${hash_password(req.password, salt)}"
+
+    conn.execute(
+        "INSERT INTO users (id, email, name, picture, role, password_hash) VALUES (?, ?, ?, '', ?, ?)",
+        (user_id, req.email, req.name, new_role, pw_hash)
+    )
+    conn.commit()
+    conn.close()
+
+    create_session(response, user_id)
+    return {"status": "success", "user": {"id": user_id, "name": req.name, "email": req.email, "picture": "", "role": new_role}}
+
+@app.post("/api/auth/login")
+def password_login(req: PasswordLogin, response: Response):
+    conn = db.get_db()
+    user = conn.execute("SELECT * FROM users WHERE email = ?", (req.email,)).fetchone()
+    conn.close()
+
+    if not user or not user["password_hash"] or not verify_password(req.password, user["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    create_session(response, user["id"])
+    return {"status": "success", "user": {"id": user["id"], "name": user["name"], "email": user["email"], "picture": user["picture"] or "", "role": user["role"]}}
 
 @app.get("/api/auth/me")
 def get_me(user: dict = Depends(get_current_user)):

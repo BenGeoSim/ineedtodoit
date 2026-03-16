@@ -129,11 +129,13 @@ def init_db():
     user_columns = [info['name'] for info in conn.execute("PRAGMA table_info(users)").fetchall()]
     if 'role' not in user_columns:
         conn.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'")
-        
+
         # Make the very first created user an admin during migration
         first_user = conn.execute("SELECT id FROM users ORDER BY created_at ASC LIMIT 1").fetchone()
         if first_user:
             conn.execute("UPDATE users SET role = 'admin' WHERE id = ?", (first_user['id'],))
+    if 'password_hash' not in user_columns:
+        conn.execute("ALTER TABLE users ADD COLUMN password_hash TEXT DEFAULT NULL")
         
     conn.commit()
     conn.close()

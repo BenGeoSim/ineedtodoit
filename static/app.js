@@ -1518,6 +1518,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Auth Logic
+    function onLoginSuccess(user) {
+        document.getElementById('login-overlay').classList.add('hidden');
+        document.getElementById('user-profile').classList.remove('hidden');
+        document.getElementById('logout-btn').classList.remove('hidden');
+        document.getElementById('user-name').textContent = user.name || user.email;
+        if (user.picture) {
+            document.getElementById('user-avatar').src = user.picture;
+        }
+        if (user.role === 'admin') {
+            document.getElementById('admin-dashboard-btn').classList.remove('hidden');
+        }
+        loadTodos();
+    }
+
     window.handleCredentialResponse = async (response) => {
         try {
             const res = await fetch('/api/auth/google', {
@@ -1526,24 +1540,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 credentials: 'same-origin',
                 body: JSON.stringify({ credential: response.credential })
             });
-
             if (res.ok) {
                 const data = await res.json();
-                document.getElementById('login-overlay').classList.add('hidden');
-                document.getElementById('user-profile').classList.remove('hidden');
-                document.getElementById('logout-btn').classList.remove('hidden');
-                document.getElementById('user-name').textContent = data.user.name || data.user.email;
-                if (data.user.picture) {
-                    document.getElementById('user-avatar').src = data.user.picture;
-                }
-
-                // Show dashboard if admin
-                if (data.user.role === 'admin') {
-                    document.getElementById('admin-dashboard-btn').classList.remove('hidden');
-                }
-
-                // Load user's data
-                loadTodos();
+                onLoginSuccess(data.user);
             } else {
                 const errorData = await res.json();
                 alert(`Login failed: ${errorData.detail}`);
@@ -1553,6 +1552,71 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('An error occurred during login. Please try again.');
         }
     };
+
+    // Auth tab switching
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-panel').forEach(p => p.classList.add('hidden'));
+            tab.classList.add('active');
+            document.getElementById(`auth-panel-${tab.dataset.tab}`).classList.remove('hidden');
+        });
+    });
+
+    // Email auth mode toggle (sign in <-> register)
+    let authMode = 'login';
+    document.getElementById('auth-mode-switch').addEventListener('click', (e) => {
+        e.preventDefault();
+        authMode = authMode === 'login' ? 'register' : 'login';
+        const isRegister = authMode === 'register';
+        document.getElementById('auth-mode-label').textContent = isRegister ? 'Create account' : 'Sign in';
+        document.getElementById('auth-mode-switch').textContent = isRegister ? 'Already have an account?' : 'Create an account';
+        document.getElementById('auth-submit-btn').textContent = isRegister ? 'Create account' : 'Sign in';
+        document.getElementById('auth-name-group').style.display = isRegister ? '' : 'none';
+        document.getElementById('auth-password').autocomplete = isRegister ? 'new-password' : 'current-password';
+        document.getElementById('auth-error').classList.add('hidden');
+    });
+
+    document.getElementById('auth-submit-btn').addEventListener('click', async () => {
+        const errorEl = document.getElementById('auth-error');
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value;
+        const name = document.getElementById('auth-name').value.trim();
+
+        if (!email || !password) {
+            errorEl.textContent = 'Please enter your email and password.';
+            errorEl.classList.remove('hidden');
+            return;
+        }
+        if (authMode === 'register' && !name) {
+            errorEl.textContent = 'Please enter your name.';
+            errorEl.classList.remove('hidden');
+            return;
+        }
+
+        const endpoint = authMode === 'register' ? '/api/auth/register' : '/api/auth/login';
+        const body = authMode === 'register' ? { name, email, password } : { email, password };
+
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify(body)
+            });
+            if (res.ok) {
+                const data = await res.json();
+                onLoginSuccess(data.user);
+            } else {
+                const err = await res.json();
+                errorEl.textContent = err.detail || 'Something went wrong.';
+                errorEl.classList.remove('hidden');
+            }
+        } catch {
+            errorEl.textContent = 'An error occurred. Please try again.';
+            errorEl.classList.remove('hidden');
+        }
+    });
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
         try {
