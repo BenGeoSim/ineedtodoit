@@ -1,5 +1,3 @@
-# About ineedtodo.it
-
 Welcome to **ineedtodo.it** — a *minimalish* todo app with just the features that matter.
 
 ---
