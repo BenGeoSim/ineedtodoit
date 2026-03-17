@@ -204,10 +204,12 @@ def google_auth(request: GoogleAuthRequest, response: Response):
                 "INSERT INTO users (id, email, name, picture, role) VALUES (?, ?, ?, ?, ?)",
                 (user_id, email, name, picture, new_role)
             )
-            
+            conn.commit()
+
             # Re-fetch new user
             user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
-            
+
+        conn.close()
         create_session(response, user_id)
         return {"status": "success", "user": {"id": user_id, "name": name, "email": email, "picture": picture, "role": user["role"] if user else "user"}}
 
