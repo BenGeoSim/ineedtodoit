@@ -108,6 +108,89 @@
             background: #ff5252;
             color: white;
         }
+
+        @media (max-width: 620px) {
+            .admin-container {
+                margin: 12px;
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .settings-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .settings-form button {
+                width: 100%;
+            }
+
+            .settings-input {
+                width: 100% !important;
+                box-sizing: border-box;
+            }
+
+            #import-db-form {
+                flex-direction: column !important;
+            }
+
+            #import-db-form button {
+                width: 100%;
+            }
+
+            /* Tables → stacked cards */
+            .users-table thead {
+                display: none;
+            }
+
+            .users-table tr {
+                display: block;
+                background: rgba(255, 255, 255, 0.03);
+                border-radius: 8px;
+                margin-bottom: 12px;
+                padding: 10px 12px;
+                border: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            .users-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 7px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                font-size: 14px;
+                gap: 8px;
+            }
+
+            .users-table td:last-child {
+                border-bottom: none;
+                padding-bottom: 2px;
+            }
+
+            .users-table td[data-label]::before {
+                content: attr(data-label);
+                color: var(--text-secondary);
+                font-size: 12px;
+                font-weight: 500;
+                flex-shrink: 0;
+                min-width: 70px;
+            }
+
+            .users-table td[data-label=""] {
+                justify-content: flex-end;
+            }
+
+            .user-profile-cell {
+                padding-top: 4px !important;
+            }
+        }
     </style>
 </head>
 

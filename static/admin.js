@@ -55,15 +55,19 @@ document.addEventListener('DOMContentLoaded', () => {
             profileCell.appendChild(nameSpan);
 
             const emailCell = document.createElement('td');
+            emailCell.dataset.label = 'Email';
             emailCell.textContent = u.email;
 
             const roleCell = document.createElement('td');
+            roleCell.dataset.label = 'Role';
             roleCell.textContent = u.role === 'admin' ? '⭐ Admin' : 'User';
 
             const countCell = document.createElement('td');
+            countCell.dataset.label = 'Todos';
             countCell.textContent = u.todo_count;
 
             const actionCell = document.createElement('td');
+            actionCell.dataset.label = '';
             if (u.role !== 'admin') {
                 const delBtn = document.createElement('button');
                 delBtn.className = 'delete-btn';
@@ -117,12 +121,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const date = new Date(s.created_at + 'Z');
             const createdCell = document.createElement('td');
+            createdCell.dataset.label = 'Created';
             createdCell.textContent = date.toLocaleDateString();
 
             const countCell = document.createElement('td');
+            countCell.dataset.label = 'Todos';
             countCell.textContent = s.todo_count;
 
             const actionCell = document.createElement('td');
+            actionCell.dataset.label = '';
             const delBtn = document.createElement('button');
             delBtn.className = 'delete-btn';
             delBtn.textContent = 'Delete Space';
