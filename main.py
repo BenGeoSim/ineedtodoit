@@ -5,6 +5,7 @@ import secrets
 import smtplib
 import ssl
 import threading
+from email.mime.text import MIMEText
 from datetime import datetime, timedelta, timezone
 
 from fastapi import Cookie, Depends, FastAPI, HTTPException, Response, UploadFile, File
@@ -39,14 +40,11 @@ def _send_email_bg(to_emails: list, subject: str, body: str):
         with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as server:
             server.login(NOTIFY_EMAIL, NOTIFY_PASSWORD)
             for to in to_emails:
-                msg = (
-                    f"From: ineedtodo.it <{NOTIFY_EMAIL}>\r\n"
-                    f"To: {to}\r\n"
-                    f"Subject: {subject}\r\n"
-                    f"Content-Type: text/plain; charset=utf-8\r\n\r\n"
-                    f"{body}"
-                )
-                server.sendmail(NOTIFY_EMAIL, to, msg.encode('utf-8'))
+                msg = MIMEText(body, 'plain', 'utf-8')
+                msg['Subject'] = subject
+                msg['From'] = NOTIFY_EMAIL
+                msg['To'] = to
+                server.sendmail(NOTIFY_EMAIL, to, msg.as_string())
                 print(f"[EMAIL] Sent to {to}")
     except Exception as e:
         print(f"[EMAIL] Failed: {e}")
