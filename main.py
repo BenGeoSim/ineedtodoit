@@ -33,6 +33,7 @@ NOTIFY_EMAIL = os.getenv('NOTIFY_EMAIL')
 NOTIFY_PASSWORD = os.getenv('NOTIFY_PASSWORD')
 
 def _send_email_bg(to_emails: list, subject: str, body: str):
+    print(f"[EMAIL] Attempting to send to {to_emails} from {NOTIFY_EMAIL}")
     try:
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as server:
@@ -46,11 +47,13 @@ def _send_email_bg(to_emails: list, subject: str, body: str):
                     f"{body}"
                 )
                 server.sendmail(NOTIFY_EMAIL, to, msg.encode('utf-8'))
+                print(f"[EMAIL] Sent to {to}")
     except Exception as e:
-        print(f"Email notification failed: {e}")
+        print(f"[EMAIL] Failed: {e}")
 
 def send_notification(to_emails: list, subject: str, body: str):
     if not to_emails or not NOTIFY_EMAIL or not NOTIFY_PASSWORD:
+        print(f"[EMAIL] Skipped: emails={to_emails}, configured={bool(NOTIFY_EMAIL and NOTIFY_PASSWORD)}")
         return
     threading.Thread(target=_send_email_bg, args=(to_emails, subject, body), daemon=True).start()
 
