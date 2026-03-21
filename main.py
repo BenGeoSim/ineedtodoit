@@ -420,10 +420,16 @@ def create_todo(todo: TodoCreate, user: dict = Depends(get_current_user)):
 
     if notify_emails:
         actor = user.get('name') or user.get('email')
+        extras = []
+        if todo.due_date:
+            extras.append(f"Due: {todo.due_date}")
+        if todo.tags:
+            extras.append(f"Tags: {', '.join(todo.tags)}")
+        extra_line = ("\n  " + "  |  ".join(extras)) if extras else ""
         send_notification(
             notify_emails,
             f"New task in {space_name}",
-            f"{actor} added a new task to \"{space_name}\":\n\n  {todo.text}\n\nView it at https://ineedtodo.it"
+            f"{actor} added a new task to \"{space_name}\":\n\n  {todo.text}{extra_line}\n\nView it at https://ineedtodo.it"
         )
 
     return todo
@@ -475,10 +481,17 @@ def update_todo(todo_id: str, todo_update: TodoUpdate, user: dict = Depends(get_
 
     if notify_emails:
         actor = user.get('name') or user.get('email')
+        extras = []
+        if new_due_date:
+            extras.append(f"Due: {new_due_date}")
+        completed_tags = json.loads(new_tags_json) if new_tags_json else []
+        if completed_tags:
+            extras.append(f"Tags: {', '.join(completed_tags)}")
+        extra_line = ("\n  " + "  |  ".join(extras)) if extras else ""
         send_notification(
             notify_emails,
             f"Task completed in {space_name}",
-            f"{actor} completed a task in \"{space_name}\":\n\n  \u2713 {new_text}\n\nView it at https://ineedtodo.it"
+            f"{actor} completed a task in \"{space_name}\":\n\n  \u2713 {new_text}{extra_line}\n\nView it at https://ineedtodo.it"
         )
 
     try:
