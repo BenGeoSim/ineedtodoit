@@ -2,6 +2,9 @@ import contextlib
 import hashlib
 import os
 import secrets
+import smtplib
+import ssl
+import threading
 from datetime import datetime, timedelta, timezone
 
 from fastapi import Cookie, Depends, FastAPI, HTTPException, Response, UploadFile, File
@@ -15,6 +18,49 @@ from pydantic import BaseModel
 from typing import Optional, List
 
 GOOGLE_CLIENT_ID = "99993409666-hstadhmvo49nkmjg8u9cr6fvjjo05hli.apps.googleusercontent.com"
+
+# Load .env file
+_env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+if os.path.exists(_env_path):
+    with open(_env_path) as _f:
+        for _line in _f:
+            _line = _line.strip()
+            if _line and not _line.startswith('#') and '=' in _line:
+                _k, _v = _line.split('=', 1)
+                os.environ.setdefault(_k.strip(), _v.strip())
+
+NOTIFY_EMAIL = os.getenv('NOTIFY_EMAIL')
+NOTIFY_PASSWORD = os.getenv('NOTIFY_PASSWORD')
+
+def _send_email_bg(to_emails: list, subject: str, body: str):
+    try:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as server:
+            server.login(NOTIFY_EMAIL, NOTIFY_PASSWORD)
+            for to in to_emails:
+                msg = (
+                    f"From: ineedtodo.it <{NOTIFY_EMAIL}>\r\n"
+                    f"To: {to}\r\n"
+                    f"Subject: {subject}\r\n"
+                    f"Content-Type: text/plain; charset=utf-8\r\n\r\n"
+                    f"{body}"
+                )
+                server.sendmail(NOTIFY_EMAIL, to, msg.encode('utf-8'))
+    except Exception as e:
+        print(f"Email notification failed: {e}")
+
+def send_notification(to_emails: list, subject: str, body: str):
+    if not to_emails or not NOTIFY_EMAIL or not NOTIFY_PASSWORD:
+        return
+    threading.Thread(target=_send_email_bg, args=(to_emails, subject, body), daemon=True).start()
+
+def get_other_member_emails(conn, space_id: str, exclude_user_id: str) -> list:
+    rows = conn.execute('''
+        SELECT u.email FROM space_members sm
+        JOIN users u ON sm.user_id = u.id
+        WHERE sm.space_id = ? AND sm.user_id != ?
+    ''', (space_id, exclude_user_id)).fetchall()
+    return [r["email"] for r in rows]
 
 
 import db
@@ -359,7 +405,23 @@ def create_todo(todo: TodoCreate, user: dict = Depends(get_current_user)):
     except Exception as e:
         conn.close()
         raise HTTPException(status_code=400, detail=str(e))
+
+    notify_emails = []
+    space_name = None
+    if todo.space_id:
+        space_row = conn.execute("SELECT name FROM shared_spaces WHERE id = ?", (todo.space_id,)).fetchone()
+        space_name = space_row["name"] if space_row else "Shared Space"
+        notify_emails = get_other_member_emails(conn, todo.space_id, user["id"])
     conn.close()
+
+    if notify_emails:
+        actor = user.get('name') or user.get('email')
+        send_notification(
+            notify_emails,
+            f"New task in {space_name}",
+            f"{actor} added a new task to \"{space_name}\":\n\n  {todo.text}\n\nView it at https://ineedtodo.it"
+        )
+
     return todo
 
 @app.put("/api/todos/{todo_id}")
@@ -397,7 +459,23 @@ def update_todo(todo_id: str, todo_update: TodoUpdate, user: dict = Depends(get_
         (new_text, new_description, 1 if new_completed else 0, 1 if new_deleted else 0, new_tags_json, new_priority, new_due_date, todo_id)
     )
     conn.commit()
+
+    notify_emails = []
+    space_name = None
+    just_completed = todo_update.completed is True and not row["completed"] and row["space_id"]
+    if just_completed:
+        space_row = conn.execute("SELECT name FROM shared_spaces WHERE id = ?", (row["space_id"],)).fetchone()
+        space_name = space_row["name"] if space_row else "Shared Space"
+        notify_emails = get_other_member_emails(conn, row["space_id"], user["id"])
     conn.close()
+
+    if notify_emails:
+        actor = user.get('name') or user.get('email')
+        send_notification(
+            notify_emails,
+            f"Task completed in {space_name}",
+            f"{actor} completed a task in \"{space_name}\":\n\n  \u2713 {new_text}\n\nView it at https://ineedtodo.it"
+        )
 
     try:
         new_tags = json.loads(new_tags_json)
