@@ -5,6 +5,7 @@ import secrets
 import smtplib
 import ssl
 import threading
+import email.utils
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta, timezone
 
@@ -44,6 +45,8 @@ def _send_email_bg(to_emails: list, subject: str, body: str):
                 msg['Subject'] = subject
                 msg['From'] = NOTIFY_EMAIL
                 msg['To'] = to
+                msg['Date'] = email.utils.formatdate(localtime=True)
+                msg['Message-ID'] = email.utils.make_msgid(domain='ineedtodo.it')
                 server.sendmail(NOTIFY_EMAIL, to, msg.as_string())
                 print(f"[EMAIL] Sent to {to}")
     except Exception as e:
