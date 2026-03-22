@@ -25,6 +25,7 @@
     --blob-1: #8b5cf6;
     --blob-2: #3b82f6;
 
+    --input-bg: rgba(15, 23, 42, 0.6);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -336,7 +337,7 @@ header p {
 input[type="text"] {
     flex: 1;
     min-width: 0;
-    background: rgba(15, 23, 42, 0.6);
+    background: var(--input-bg);
     border: 1px solid var(--card-border);
     border-radius: 12px;
     padding: 16px 20px;
@@ -752,7 +753,7 @@ ul.expanded {
     min-width: 120px;
     padding: 10px 14px;
     font-size: 0.9rem;
-    background: rgba(15, 23, 42, 0.4) !important;
+    background: var(--input-bg) !important;
 }
 
 /* Hamburger Menu */
@@ -1116,4 +1117,136 @@ body.trash-mode #tag-filters {
         margin-left: 0;
         margin-right: 0;
     }
+}
+
+/* ── THEMES ───────────────────────────────────────────────────────── */
+
+/* Light */
+html[data-theme="light"] {
+    --bg-color: #f0f4f8;
+    --card-bg: rgba(255, 255, 255, 0.88);
+    --card-border: rgba(0, 0, 0, 0.09);
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --input-bg: rgba(241, 245, 249, 0.9);
+    --blob-1: #c7d2fe;
+    --blob-2: #bfdbfe;
+    --accent-glow: rgba(99, 102, 241, 0.2);
+    color-scheme: light;
+}
+
+html[data-theme="light"] h1,
+html[data-theme="light"] .login-card h2 {
+    background: linear-gradient(135deg, #4338ca, #818cf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+html[data-theme="light"] .login-overlay {
+    background: rgba(240, 244, 248, 0.88);
+}
+
+html[data-theme="light"] .todo-content {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+html[data-theme="light"] .todo-content:hover {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+html[data-theme="light"] .nested-list {
+    border-left-color: rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="light"] .child-input-group,
+html[data-theme="light"] .add-tag-group {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+html[data-theme="light"] .description-panel {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.07);
+}
+
+/* Forest */
+html[data-theme="forest"] {
+    --bg-color: #071a10;
+    --card-bg: rgba(10, 35, 20, 0.85);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --text-main: #dcfce7;
+    --text-muted: #86efac;
+    --input-bg: rgba(7, 26, 16, 0.7);
+    --accent: #22c55e;
+    --accent-hover: #16a34a;
+    --accent-glow: rgba(34, 197, 94, 0.35);
+    --success: #4ade80;
+    --blob-1: #14532d;
+    --blob-2: #052e16;
+    color-scheme: dark;
+}
+
+html[data-theme="forest"] h1,
+html[data-theme="forest"] .login-card h2 {
+    background: linear-gradient(135deg, #bbf7d0, #4ade80);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Sunset */
+html[data-theme="sunset"] {
+    --bg-color: #1a0810;
+    --card-bg: rgba(40, 12, 24, 0.85);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --text-main: #fff1f2;
+    --text-muted: #fda4af;
+    --input-bg: rgba(26, 8, 16, 0.7);
+    --accent: #f43f5e;
+    --accent-hover: #e11d48;
+    --accent-glow: rgba(244, 63, 94, 0.35);
+    --blob-1: #9f1239;
+    --blob-2: #c2410c;
+    color-scheme: dark;
+}
+
+html[data-theme="sunset"] h1,
+html[data-theme="sunset"] .login-card h2 {
+    background: linear-gradient(135deg, #fda4af, #fb923c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Theme swatch picker */
+.theme-picker-row {
+    cursor: default;
+    gap: 8px;
+}
+
+.theme-swatches {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+}
+
+.theme-swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+}
+
+.theme-swatch:hover {
+    transform: scale(1.25);
+}
+
+.theme-swatch.active {
+    border-color: var(--text-main);
+    box-shadow: 0 0 0 1px var(--bg-color);
 }

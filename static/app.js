@@ -23,6 +23,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let sortBy = getSortPreference();
 
+    // Theme switcher
+    function applyTheme(name) {
+        document.documentElement.dataset.theme = name || 'dark';
+        localStorage.setItem('theme', name || 'dark');
+        document.querySelectorAll('.theme-swatch').forEach(s => {
+            s.classList.toggle('active', s.dataset.theme === (name || 'dark'));
+        });
+    }
+    applyTheme(localStorage.getItem('theme') || 'dark');
+    document.querySelectorAll('.theme-swatch').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyTheme(btn.dataset.theme);
+        });
+    });
+
     // Tags visibility toggle
     let tagsHidden = localStorage.getItem('tags_hidden') === 'true';
 

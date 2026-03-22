@@ -13,6 +13,8 @@
 
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Apply saved theme before paint to avoid flash -->
+    <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t;})()</script>
 </head>
 
 <body>
@@ -64,6 +66,16 @@
                     <span id="user-name" class="user-name"></span>
                 </div>
 
+                <div class="dropdown-item theme-picker-row">
+                    <ion-icon name="color-palette-outline"></ion-icon>
+                    <span>Theme</span>
+                    <div class="theme-swatches">
+                        <button class="theme-swatch" data-theme="dark"   title="Dark"   style="background:linear-gradient(135deg,#8b5cf6,#3b82f6)"></button>
+                        <button class="theme-swatch" data-theme="light"  title="Light"  style="background:linear-gradient(135deg,#c7d2fe,#bfdbfe)"></button>
+                        <button class="theme-swatch" data-theme="forest" title="Forest" style="background:linear-gradient(135deg,#14532d,#22c55e)"></button>
+                        <button class="theme-swatch" data-theme="sunset" title="Sunset" style="background:linear-gradient(135deg,#9f1239,#f97316)"></button>
+                    </div>
+                </div>
                 <a href="/about.html" class="dropdown-item" style="text-decoration:none;">
                     <ion-icon name="information-circle-outline"></ion-icon> <span>About</span>
                 </a>
