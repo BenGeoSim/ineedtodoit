@@ -1526,6 +1526,11 @@ html[data-theme="terminal"] .description-indicator {
     border: none;
     padding: 0;
     color: var(--text-muted);
+    font-size: 0;
+}
+
+html[data-theme="terminal"] .description-indicator::before {
+    content: "[note]";
     font-family: 'VT323', monospace;
     font-size: 16px;
 }
@@ -1538,10 +1543,6 @@ html[data-theme="terminal"] .description-indicator:hover {
 
 html[data-theme="terminal"] .description-indicator ion-icon {
     display: none;
-}
-
-html[data-theme="terminal"] .description-indicator::before {
-    content: "[note]";
 }
 
 /* Note/description toggle: theme green when note is attached */
