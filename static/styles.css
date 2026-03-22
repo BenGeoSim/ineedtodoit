@@ -1718,12 +1718,12 @@ html.crt-on #crt-overlay {
     inset: 0;
     background: repeating-linear-gradient(
         0deg,
-        rgba(0, 0, 0, 0.18) 0px,
-        rgba(0, 0, 0, 0.18) 1px,
-        transparent 1px,
-        transparent 3px
+        rgba(0, 0, 0, 0.35) 0px,
+        rgba(0, 0, 0, 0.35) 2px,
+        transparent 2px,
+        transparent 4px
     );
-    animation: crt-flicker 0.12s infinite;
+    animation: crt-flicker 0.08s infinite;
 }
 
 /* Vignette + phosphor glow */
@@ -1732,16 +1732,31 @@ html.crt-on #crt-overlay {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.75) 100%);
-    box-shadow: inset 0 0 120px rgba(0, 255, 65, 0.04);
+        radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.88) 100%);
+    box-shadow: inset 0 0 80px rgba(0, 255, 65, 0.15);
+}
+
+/* Screen-wide flicker applied to the whole page content */
+html.crt-on {
+    animation: crt-screen-flicker 5s infinite;
 }
 
 @keyframes crt-flicker {
     0%   { opacity: 1; }
-    45%  { opacity: 0.98; }
-    50%  { opacity: 0.94; }
-    55%  { opacity: 0.98; }
+    30%  { opacity: 0.92; }
+    50%  { opacity: 0.85; }
+    70%  { opacity: 0.93; }
     100% { opacity: 1; }
+}
+
+@keyframes crt-screen-flicker {
+    0%    { filter: brightness(1); }
+    92%   { filter: brightness(1); }
+    93%   { filter: brightness(0.6); }
+    94%   { filter: brightness(1.1); }
+    95%   { filter: brightness(0.7); }
+    96%   { filter: brightness(1); }
+    100%  { filter: brightness(1); }
 }
 
 /* Theme swatch picker */
