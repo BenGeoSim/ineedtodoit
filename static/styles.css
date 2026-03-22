@@ -1342,6 +1342,27 @@ html[data-theme="terminal"] #menu-toggle-btn::before {
     color: var(--text-main);
 }
 
+/* Description panel edit button: [edit] */
+html[data-theme="terminal"] .description-edit-btn {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+}
+
+html[data-theme="terminal"] .description-edit-btn ion-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] .description-edit-btn::before {
+    content: "[edit]";
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: var(--text-main);
+}
+
 /* No rounded corners — old-school terminal feel */
 html[data-theme="terminal"] *,
 html[data-theme="terminal"] *::before,
