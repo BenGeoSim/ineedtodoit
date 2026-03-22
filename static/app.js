@@ -1274,6 +1274,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 taskDue = `${yy}-${mm}-${dd}`;
                 cookedRaw = cookedRaw.replace(dueMatch[0], '').trim();
             }
+            // /note/ everything after becomes the description
+            let taskNote = '';
+            const noteMatch = cookedRaw.match(/\/note\/\s*(.*)/i);
+            if (noteMatch) {
+                taskNote = noteMatch[1].trim();
+                cookedRaw = cookedRaw.replace(noteMatch[0], '').trim();
+            }
             const parts = cookedRaw.split(/\/tag\//i);
             const text = parts[0].trim();
             const tags = parts[1] ? processTags(parts[1]) : [];
@@ -1282,7 +1289,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Reuse submitRoot logic with parsed values
             const newId = crypto.randomUUID();
             const defaultPrio = taskPrio;
-            const newTodo = { id: newId, text, parent_id: null, completed: false, tags, priority: defaultPrio, due_date: taskDue, space_id: currentSpaceId };
+            const newTodo = { id: newId, text, parent_id: null, completed: false, tags, priority: defaultPrio, due_date: taskDue, description: taskNote, space_id: currentSpaceId };
             todos.push(newTodo);
             updateGlobalTodo(newTodo.id, newTodo);
             selectedTag = null;
