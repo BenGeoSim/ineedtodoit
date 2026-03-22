@@ -1292,8 +1292,10 @@ html[data-theme="terminal"] .all-priorities-badge::after  { content: "]"; }
 
 html[data-theme="terminal"] .all-tags-badge::before  { content: "["; }
 html[data-theme="terminal"] .all-tags-badge::after   { content: "]"; }
-html[data-theme="terminal"] .tag-filter-badge::before { content: "["; }
-html[data-theme="terminal"] .tag-filter-badge::after  { content: "]"; }
+html[data-theme="terminal"] .tag-filter-badge::before  { content: "["; }
+html[data-theme="terminal"] .tag-filter-badge::after   { content: "]"; }
+html[data-theme="terminal"] .sort-filter-badge::before { content: "["; }
+html[data-theme="terminal"] .sort-filter-badge::after  { content: "]"; }
 
 html[data-theme="terminal"] #toggle-tags-btn {
     background: none !important;

@@ -522,7 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         options.forEach(opt => {
             const badge = document.createElement('span');
-            badge.className = 'filter-badge';
+            badge.className = 'filter-badge sort-filter-badge';
             if (sortBy === opt.id) badge.classList.add('active');
             badge.textContent = opt.label;
             badge.addEventListener('click', () => {
