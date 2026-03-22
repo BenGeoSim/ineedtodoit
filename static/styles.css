@@ -1789,6 +1789,50 @@ html[data-theme="terminal"] .terminal-task-field:empty::before {
     50% { opacity: 0; }
 }
 
+/* Terminal help/commands expandable */
+.terminal-help {
+    display: none;
+}
+
+html[data-theme="terminal"] .terminal-help {
+    display: block;
+    margin-top: 10px;
+    color: var(--text-muted);
+    font-size: 16px;
+}
+
+html[data-theme="terminal"] .terminal-help summary {
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    color: var(--text-muted);
+}
+
+html[data-theme="terminal"] .terminal-help summary::-webkit-details-marker {
+    display: none;
+}
+
+html[data-theme="terminal"] .terminal-help[open] summary {
+    color: var(--text-main);
+    margin-bottom: 6px;
+}
+
+html[data-theme="terminal"] .terminal-help ul {
+    margin: 0;
+    padding: 0 0 0 2ch;
+    list-style: none;
+    line-height: 1.8;
+}
+
+html[data-theme="terminal"] .terminal-help li::before {
+    content: "> ";
+    color: var(--text-muted);
+}
+
+html[data-theme="terminal"] .tcmd {
+    color: var(--text-main);
+}
+
 /* CRT overlay */
 #crt-overlay {
     display: none;
