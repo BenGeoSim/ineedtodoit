@@ -1341,6 +1341,29 @@ html[data-theme="terminal"] .priority-dot::before {
     content: "[" attr(data-prio) "]";
 }
 
+/* Due date badges: terminal colours only */
+html[data-theme="terminal"] .due-date-badge {
+    background: rgba(0, 59, 0, 0.4);
+    color: var(--text-muted);
+    border-color: rgba(0, 143, 17, 0.3);
+}
+
+html[data-theme="terminal"] .due-date-badge:hover {
+    background: rgba(0, 59, 0, 0.7);
+}
+
+html[data-theme="terminal"] .due-date-badge.due-urgent {
+    background: rgba(0, 59, 0, 0.5);
+    color: var(--text-main);
+    border-color: rgba(0, 143, 17, 0.6);
+}
+
+html[data-theme="terminal"] .due-date-badge.due-overdue {
+    background: rgba(0, 59, 0, 0.5);
+    color: var(--text-main);
+    border-color: var(--text-main);
+}
+
 /* Theme swatch picker */
 .theme-picker-row {
     cursor: default;
