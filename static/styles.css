@@ -1256,11 +1256,14 @@ html[data-theme="terminal"] *::after {
 }
 
 /* VT323 font throughout */
+html[data-theme="terminal"] {
+    font-size: 18px;
+    letter-spacing: 0.03em;
+}
+
 html[data-theme="terminal"],
 html[data-theme="terminal"] * {
     font-family: 'VT323', monospace !important;
-    font-size: 1.15em;
-    letter-spacing: 0.03em;
 }
 
 /* Solid borders, no blur */
