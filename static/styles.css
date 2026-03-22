@@ -1254,9 +1254,20 @@ html[data-theme="terminal"] .todo-item.completed > .todo-content .checkbox::befo
 }
 
 html[data-theme="terminal"] .item-tag {
-    background: rgba(0, 59, 0, 0.6);
-    color: #00ff41;
-    border-color: rgba(0, 143, 17, 0.5);
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text-muted);
+    font-size: 16px;
+    font-family: 'VT323', monospace;
+}
+
+html[data-theme="terminal"] .item-tag::before {
+    content: "[";
+}
+
+html[data-theme="terminal"] .item-tag::after {
+    content: "]";
 }
 
 html[data-theme="terminal"] .filter-badge.active {
@@ -1415,15 +1426,26 @@ html[data-theme="terminal"] .toggle-children.expanded::before {
 
 /* View note indicator button */
 html[data-theme="terminal"] .description-indicator {
-    background: rgba(0, 59, 0, 0.4);
+    background: none;
+    border: none;
+    padding: 0;
     color: var(--text-muted);
-    border-color: rgba(0, 143, 17, 0.3);
+    font-family: 'VT323', monospace;
+    font-size: 16px;
 }
 
 html[data-theme="terminal"] .description-indicator:hover {
-    background: rgba(0, 59, 0, 0.7);
-    border-color: var(--text-main);
+    background: none;
+    border: none;
     color: var(--text-main);
+}
+
+html[data-theme="terminal"] .description-indicator ion-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] .description-indicator::before {
+    content: "[note]";
 }
 
 /* Note/description toggle: theme green when note is attached */
@@ -1460,28 +1482,36 @@ html[data-theme="terminal"] .item-tag .remove-tag::before {
     font-family: 'VT323', monospace;
 }
 
-/* Due date badges: terminal colours only */
+/* Due date badges: no box, [date] style */
 html[data-theme="terminal"] .due-date-badge {
-    background: rgba(0, 59, 0, 0.4);
+    background: none;
+    border: none;
+    padding: 0;
     color: var(--text-muted);
-    border-color: rgba(0, 143, 17, 0.3);
+    font-family: 'VT323', monospace;
+    font-size: 16px;
 }
 
 html[data-theme="terminal"] .due-date-badge:hover {
-    background: rgba(0, 59, 0, 0.7);
+    background: none;
+    color: var(--text-main);
 }
 
 html[data-theme="terminal"] .due-date-badge.due-urgent {
-    background: rgba(0, 59, 0, 0.5);
+    background: none;
+    border: none;
     color: var(--text-main);
-    border-color: rgba(0, 143, 17, 0.6);
 }
 
 html[data-theme="terminal"] .due-date-badge.due-overdue {
-    background: rgba(0, 59, 0, 0.5);
+    background: none;
+    border: none;
     color: var(--text-main);
-    border-color: var(--text-main);
+    text-decoration: underline;
 }
+
+html[data-theme="terminal"] .due-date-badge::before { content: "["; }
+html[data-theme="terminal"] .due-date-badge::after  { content: "]"; }
 
 /* Theme swatch picker */
 .theme-picker-row {
