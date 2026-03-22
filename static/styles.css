@@ -1233,7 +1233,24 @@ html[data-theme="terminal"] .todo-content:hover {
 }
 
 html[data-theme="terminal"] .checkbox {
-    border-color: #008f11;
+    border: none !important;
+    background: none !important;
+    width: auto !important;
+    height: auto !important;
+    font-size: 18px;
+    color: var(--text-main);
+}
+
+html[data-theme="terminal"] .checkbox .check-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] .checkbox::before {
+    content: "[_]";
+}
+
+html[data-theme="terminal"] .todo-item.completed > .todo-content .checkbox::before {
+    content: "[X]";
 }
 
 html[data-theme="terminal"] .item-tag {
