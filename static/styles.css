@@ -1131,7 +1131,7 @@ body.trash-mode #tag-filters {
 
 /* Light */
 /* Light — Refined Organic (Sol Struck) */
-html[data-theme="light"] {
+html[data-theme="sol"] {
     --bg-color: #F9F7F4;
     --card-bg: rgba(255, 253, 250, 0.92);
     --card-border: #E5E1DA;
@@ -1150,8 +1150,8 @@ html[data-theme="light"] {
 }
 
 /* Serif headlines */
-html[data-theme="light"] h1,
-html[data-theme="light"] .login-card h2 {
+html[data-theme="sol"] h1,
+html[data-theme="sol"] .login-card h2 {
     font-family: 'Newsreader', Georgia, serif;
     font-weight: 300;
     letter-spacing: 0.08em;
@@ -1163,106 +1163,106 @@ html[data-theme="light"] .login-card h2 {
 }
 
 /* Inter body */
-html[data-theme="light"],
-html[data-theme="light"] input,
-html[data-theme="light"] button,
-html[data-theme="light"] textarea {
+html[data-theme="sol"],
+html[data-theme="sol"] input,
+html[data-theme="sol"] button,
+html[data-theme="sol"] textarea {
     font-family: 'Inter', system-ui, sans-serif;
 }
 
 /* Subtle 4px radii throughout */
-html[data-theme="light"] .todo-content,
-html[data-theme="light"] .card,
-html[data-theme="light"] .login-card,
-html[data-theme="light"] .dropdown-menu,
-html[data-theme="light"] .actions,
-html[data-theme="light"] input[type="text"],
-html[data-theme="light"] .filter-badge,
-html[data-theme="light"] .tag-badge {
+html[data-theme="sol"] .todo-content,
+html[data-theme="sol"] .card,
+html[data-theme="sol"] .login-card,
+html[data-theme="sol"] .dropdown-menu,
+html[data-theme="sol"] .actions,
+html[data-theme="sol"] input[type="text"],
+html[data-theme="sol"] .filter-badge,
+html[data-theme="sol"] .tag-badge {
     border-radius: 4px;
 }
 
-html[data-theme="light"] .primary-btn {
+html[data-theme="sol"] .primary-btn {
     border-radius: 4px;
     font-family: 'Inter', sans-serif;
     letter-spacing: 0.06em;
     font-weight: 500;
 }
 
-html[data-theme="light"] .login-overlay {
+html[data-theme="sol"] .login-overlay {
     background: rgba(249, 247, 244, 0.92);
 }
 
-html[data-theme="light"] .todo-content {
+html[data-theme="sol"] .todo-content {
     background: rgba(255, 253, 250, 0.7);
     border: 1px solid #E5E1DA;
 }
 
-html[data-theme="light"] .todo-content:hover {
+html[data-theme="sol"] .todo-content:hover {
     background: rgba(255, 253, 250, 0.95);
     border-color: #D4C9BC;
 }
 
-html[data-theme="light"] .nested-list {
+html[data-theme="sol"] .nested-list {
     border-left-color: #E5E1DA;
 }
 
-html[data-theme="light"] .child-input-group,
-html[data-theme="light"] .add-tag-group {
+html[data-theme="sol"] .child-input-group,
+html[data-theme="sol"] .add-tag-group {
     background: rgba(229, 225, 218, 0.35);
 }
 
-html[data-theme="light"] .description-panel {
+html[data-theme="sol"] .description-panel {
     background: rgba(229, 225, 218, 0.25);
     border-color: #E5E1DA;
 }
 
 /* Uppercase spaced labels */
-html[data-theme="light"] .filter-badge,
-html[data-theme="light"] .tag-badge {
+html[data-theme="sol"] .filter-badge,
+html[data-theme="sol"] .tag-badge {
     text-transform: uppercase;
     letter-spacing: 0.07em;
     font-size: 0.72rem;
     font-weight: 500;
 }
 
-html[data-theme="light"] .app-container,
-html[data-theme="light"] .dropdown-menu,
-html[data-theme="light"] .login-card,
-html[data-theme="light"] .actions {
+html[data-theme="sol"] .app-container,
+html[data-theme="sol"] .dropdown-menu,
+html[data-theme="sol"] .login-card,
+html[data-theme="sol"] .actions {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-color: #E5E1DA;
 }
 
 /* Override hardcoded purple for light theme */
-html[data-theme="light"] .space-item.active {
+html[data-theme="sol"] .space-item.active {
     background: rgba(231, 125, 90, 0.12);
     color: #C05030;
 }
 
-html[data-theme="light"] .space-item.active ion-icon {
+html[data-theme="sol"] .space-item.active ion-icon {
     color: #C05030;
 }
 
-html[data-theme="light"] .filter-badge.active {
+html[data-theme="sol"] .filter-badge.active {
     background: rgba(231, 125, 90, 0.15);
     border-color: #E77D5A;
     color: #B04828;
 }
 
-html[data-theme="light"] .autocomplete-item:hover {
+html[data-theme="sol"] .autocomplete-item:hover {
     background: rgba(231, 125, 90, 0.12);
     color: #2D2D2D;
 }
 
-html[data-theme="light"] .item-tag {
+html[data-theme="sol"] .item-tag {
     background: rgba(231, 125, 90, 0.12);
     color: #B04828;
     border-color: rgba(231, 125, 90, 0.3);
 }
 
-html[data-theme="light"] .tag-badge {
+html[data-theme="sol"] .tag-badge {
     background: rgba(231, 125, 90, 0.12);
     color: #B04828;
     border-color: rgba(231, 125, 90, 0.3);
