@@ -1256,6 +1256,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyCrt();
                 return;
             }
+            const prioMatch = raw.match(/^\/priority\/\s*([0-4])$/i);
+            if (prioMatch) {
+                terminalInput.textContent = '';
+                const p = parseInt(prioMatch[1]);
+                selectedPriority = (selectedPriority === p) ? null : p;
+                render();
+                return;
+            }
             const parts = raw.split(/\/tag\//i);
             const text = parts[0].trim();
             const tags = parts[1] ? processTags(parts[1]) : [];
