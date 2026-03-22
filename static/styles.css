@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500&display=swap');
 
 @font-face {
     font-family: 'BoxFont';
@@ -1129,52 +1130,109 @@ body.trash-mode #tag-filters {
 /* ── THEMES ───────────────────────────────────────────────────────── */
 
 /* Light */
+/* Light — Refined Organic (Sol Struck) */
 html[data-theme="light"] {
-    --bg-color: #f0f4f8;
-    --card-bg: rgba(255, 255, 255, 0.88);
-    --card-border: rgba(0, 0, 0, 0.09);
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --input-bg: rgba(241, 245, 249, 0.9);
-    --blob-1: #c7d2fe;
-    --blob-2: #bfdbfe;
-    --accent-glow: rgba(99, 102, 241, 0.2);
+    --bg-color: #F9F7F4;
+    --card-bg: rgba(255, 253, 250, 0.92);
+    --card-border: #E5E1DA;
+    --text-main: #2D2D2D;
+    --text-muted: #8C806E;
+    --input-bg: rgba(229, 225, 218, 0.5);
+    --accent: #E77D5A;
+    --accent-hover: #D4603D;
+    --accent-glow: rgba(231, 125, 90, 0.18);
+    --success: #6B9B6B;
+    --danger: #C0504D;
+    --danger-hover: #A03030;
+    --blob-1: #F2C4A8;
+    --blob-2: #E5E1DA;
     color-scheme: light;
 }
 
+/* Serif headlines */
 html[data-theme="light"] h1,
 html[data-theme="light"] .login-card h2 {
-    background: linear-gradient(135deg, #4338ca, #818cf8);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    -webkit-text-fill-color: #2D2D2D;
+    color: #2D2D2D;
+}
+
+/* Inter body */
+html[data-theme="light"],
+html[data-theme="light"] input,
+html[data-theme="light"] button,
+html[data-theme="light"] textarea {
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Subtle 4px radii throughout */
+html[data-theme="light"] .todo-content,
+html[data-theme="light"] .card,
+html[data-theme="light"] .login-card,
+html[data-theme="light"] .dropdown-menu,
+html[data-theme="light"] .actions,
+html[data-theme="light"] input[type="text"],
+html[data-theme="light"] .filter-badge,
+html[data-theme="light"] .tag-badge {
+    border-radius: 4px;
+}
+
+html[data-theme="light"] .primary-btn {
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.06em;
+    font-weight: 500;
 }
 
 html[data-theme="light"] .login-overlay {
-    background: rgba(240, 244, 248, 0.88);
+    background: rgba(249, 247, 244, 0.92);
 }
 
 html[data-theme="light"] .todo-content {
-    background: rgba(0, 0, 0, 0.02);
+    background: rgba(255, 253, 250, 0.7);
+    border: 1px solid #E5E1DA;
 }
 
 html[data-theme="light"] .todo-content:hover {
-    background: rgba(0, 0, 0, 0.04);
-    border-color: rgba(0, 0, 0, 0.15);
+    background: rgba(255, 253, 250, 0.95);
+    border-color: #D4C9BC;
 }
 
 html[data-theme="light"] .nested-list {
-    border-left-color: rgba(0, 0, 0, 0.08);
+    border-left-color: #E5E1DA;
 }
 
 html[data-theme="light"] .child-input-group,
 html[data-theme="light"] .add-tag-group {
-    background: rgba(0, 0, 0, 0.04);
+    background: rgba(229, 225, 218, 0.35);
 }
 
 html[data-theme="light"] .description-panel {
-    background: rgba(0, 0, 0, 0.03);
-    border-color: rgba(0, 0, 0, 0.07);
+    background: rgba(229, 225, 218, 0.25);
+    border-color: #E5E1DA;
+}
+
+/* Uppercase spaced labels */
+html[data-theme="light"] .filter-badge,
+html[data-theme="light"] .tag-badge {
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-size: 0.72rem;
+    font-weight: 500;
+}
+
+html[data-theme="light"] .app-container,
+html[data-theme="light"] .dropdown-menu,
+html[data-theme="light"] .login-card,
+html[data-theme="light"] .actions {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-color: #E5E1DA;
 }
 
 /* Forest */
