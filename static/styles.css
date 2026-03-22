@@ -1341,6 +1341,25 @@ html[data-theme="terminal"] .priority-dot::before {
     content: "[" attr(data-prio) "]";
 }
 
+/* Collapse/expand toggle: > and v */
+html[data-theme="terminal"] .toggle-children ion-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] .toggle-children::before {
+    content: ">";
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+}
+
+html[data-theme="terminal"] .toggle-children.expanded {
+    transform: none;
+}
+
+html[data-theme="terminal"] .toggle-children.expanded::before {
+    content: "v";
+}
+
 /* View note indicator button */
 html[data-theme="terminal"] .description-indicator {
     background: rgba(0, 59, 0, 0.4);
