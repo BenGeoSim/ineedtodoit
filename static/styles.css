@@ -1398,12 +1398,21 @@ html[data-theme="terminal"] .task-menu-dropdown .set-due-date::before       { co
 html[data-theme="terminal"] .task-menu-dropdown .move-to-space::before      { content: "[>]"; }
 html[data-theme="terminal"] .task-menu-dropdown .delete::before             { content: "[x]"; }
 
-/* Creator/ownership badge: theme green border */
+/* Creator/ownership badge: [initials] style, no box */
 html[data-theme="terminal"] .creator-badge {
-    background: rgba(0, 59, 0, 0.4);
+    background: none;
+    border: none;
+    width: auto;
+    height: auto;
+    border-radius: 0;
     color: var(--text-muted);
-    border-color: rgba(0, 143, 17, 0.5);
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    font-weight: normal;
 }
+
+html[data-theme="terminal"] .creator-badge::before { content: "["; }
+html[data-theme="terminal"] .creator-badge::after  { content: "]"; }
 
 /* Collapse/expand toggle: > and v */
 html[data-theme="terminal"] .toggle-children ion-icon {
