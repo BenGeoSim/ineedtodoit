@@ -1341,6 +1341,30 @@ html[data-theme="terminal"] .priority-dot::before {
     content: "[" attr(data-prio) "]";
 }
 
+/* Add task button: use theme green instead of white for the icon */
+html[data-theme="terminal"] .primary-btn {
+    color: var(--text-main) !important;
+}
+
+/* Remove tag button: * in theme colour, no icon */
+html[data-theme="terminal"] .item-tag .remove-tag {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+html[data-theme="terminal"] .item-tag .remove-tag:hover {
+    color: var(--text-main);
+}
+
+html[data-theme="terminal"] .item-tag .remove-tag ion-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] .item-tag .remove-tag::before {
+    content: "*";
+    font-family: 'VT323', monospace;
+}
+
 /* Due date badges: terminal colours only */
 html[data-theme="terminal"] .due-date-badge {
     background: rgba(0, 59, 0, 0.4);
