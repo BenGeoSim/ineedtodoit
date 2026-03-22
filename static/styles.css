@@ -1362,6 +1362,31 @@ html[data-theme="terminal"] .task-menu-btn::before {
     color: var(--text-main);
 }
 
+/* Dropdown action buttons: no box, [] labels */
+html[data-theme="terminal"] .task-menu-dropdown .action-btn {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+html[data-theme="terminal"] .task-menu-dropdown .action-btn ion-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] .task-menu-dropdown .action-btn::before {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--text-main);
+}
+
+html[data-theme="terminal"] .task-menu-dropdown .description-toggle::before { content: "[n]"; }
+html[data-theme="terminal"] .task-menu-dropdown .add-tag::before            { content: "[#]"; }
+html[data-theme="terminal"] .task-menu-dropdown .edit::before               { content: "[e]"; }
+html[data-theme="terminal"] .task-menu-dropdown .restore::before            { content: "[u]"; }
+html[data-theme="terminal"] .task-menu-dropdown .set-due-date::before       { content: "[d]"; }
+html[data-theme="terminal"] .task-menu-dropdown .move-to-space::before      { content: "[>]"; }
+html[data-theme="terminal"] .task-menu-dropdown .delete::before             { content: "[x]"; }
+
 /* Creator/ownership badge: theme green border */
 html[data-theme="terminal"] .creator-badge {
     background: rgba(0, 59, 0, 0.4);
