@@ -1224,12 +1224,13 @@ html[data-theme="terminal"] .login-card h2 {
 }
 
 html[data-theme="terminal"] .todo-content {
-    background: rgba(0, 59, 0, 0.2);
+    background: none;
+    border-color: transparent;
 }
 
 html[data-theme="terminal"] .todo-content:hover {
-    background: rgba(0, 59, 0, 0.4);
-    border-color: rgba(0, 143, 17, 0.5);
+    background: none;
+    border-color: transparent;
 }
 
 html[data-theme="terminal"] .checkbox {
