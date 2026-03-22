@@ -1173,7 +1173,7 @@ html[data-theme="light"] .description-panel {
 }
 
 /* Forest */
-html[data-theme="forest"] {
+html[data-theme="box-x"] {
     --bg-color: #071a10;
     --card-bg: rgba(10, 35, 20, 0.85);
     --card-border: rgba(255, 255, 255, 0.08);
@@ -1189,8 +1189,8 @@ html[data-theme="forest"] {
     color-scheme: dark;
 }
 
-html[data-theme="forest"] h1,
-html[data-theme="forest"] .login-card h2 {
+html[data-theme="box-x"] h1,
+html[data-theme="box-x"] .login-card h2 {
     background: linear-gradient(135deg, #bbf7d0, #4ade80);
     -webkit-background-clip: text;
     background-clip: text;
