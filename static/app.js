@@ -1249,6 +1249,13 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const raw = terminalInput.textContent.trim();
             if (!raw) return;
+            if (/^\/crt\/$/i.test(raw)) {
+                terminalInput.textContent = '';
+                crtOn = !crtOn;
+                localStorage.setItem('crt_filter', crtOn);
+                applyCrt();
+                return;
+            }
             const parts = raw.split(/\/tag\//i);
             const text = parts[0].trim();
             const tags = parts[1] ? processTags(parts[1]) : [];
