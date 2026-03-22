@@ -472,7 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add "All Priorities" badge
         const allBadge = document.createElement('span');
-        allBadge.className = 'filter-badge';
+        allBadge.className = 'filter-badge all-priorities-badge';
         if (selectedPriority === null) allBadge.classList.add('active');
         allBadge.textContent = 'All Priorities';
         allBadge.addEventListener('click', () => {

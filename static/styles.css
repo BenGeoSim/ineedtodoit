@@ -1271,11 +1271,24 @@ html[data-theme="terminal"] .item-tag::after {
     content: "]";
 }
 
-html[data-theme="terminal"] .filter-badge.active {
-    background: rgba(0, 59, 0, 0.6);
-    border-color: #008f11;
-    color: #00ff41;
+html[data-theme="terminal"] .filter-badge {
+    background: none;
+    border-color: transparent;
+    color: var(--text-muted);
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    padding: 0 4px;
 }
+
+html[data-theme="terminal"] .filter-badge:hover,
+html[data-theme="terminal"] .filter-badge.active {
+    background: none;
+    border-color: transparent;
+    color: var(--text-main);
+}
+
+html[data-theme="terminal"] .all-priorities-badge::before { content: "["; }
+html[data-theme="terminal"] .all-priorities-badge::after  { content: "]"; }
 
 /* No rounded corners — old-school terminal feel */
 html[data-theme="terminal"] *,
