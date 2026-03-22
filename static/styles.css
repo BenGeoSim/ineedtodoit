@@ -1344,6 +1344,12 @@ html[data-theme="terminal"] #menu-toggle-btn::before {
     color: var(--text-main);
 }
 
+/* Active space item: theme green */
+html[data-theme="terminal"] .space-item.active {
+    background: rgba(0, 59, 0, 0.5);
+    color: var(--text-main);
+}
+
 /* Space type icons: Solo / Team text */
 html[data-theme="terminal"] [data-space-type] ion-icon {
     display: none;
