@@ -24,32 +24,37 @@ document.addEventListener('DOMContentLoaded', () => {
     let sortBy = getSortPreference();
 
     // Theme switcher
+    // CRT filter — declared first so applyTheme can reference it
+    let crtOn = localStorage.getItem('crt_filter') === 'true';
+    function applyCrt() {
+        document.documentElement.classList.toggle('crt-on', crtOn);
+        const label = document.getElementById('crt-btn-text');
+        if (label) label.textContent = `CRT Filter: ${crtOn ? 'On' : 'Off'}`;
+    }
+
     function applyTheme(name) {
         document.documentElement.dataset.theme = name || 'dark';
         localStorage.setItem('theme', name || 'dark');
         document.querySelectorAll('.theme-swatch').forEach(s => {
             s.classList.toggle('active', s.dataset.theme === (name || 'dark'));
         });
-        // Show CRT toggle only in terminal theme
-        document.getElementById('toggle-crt-btn')?.classList.toggle('hidden', (name || 'dark') !== 'terminal');
+        // Show CRT toggle only in terminal theme; auto-off when leaving terminal
+        const isTerminal = (name || 'dark') === 'terminal';
+        document.getElementById('toggle-crt-btn')?.classList.toggle('hidden', !isTerminal);
+        if (!isTerminal && crtOn) {
+            crtOn = false;
+            localStorage.setItem('crt_filter', false);
+            applyCrt();
+        }
     }
     applyTheme(localStorage.getItem('theme') || 'dark');
+    applyCrt();
     document.querySelectorAll('.theme-swatch').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             applyTheme(btn.dataset.theme);
         });
     });
-
-    // CRT filter toggle
-    let crtOn = localStorage.getItem('crt_filter') === 'true';
-    function applyCrt() {
-        document.documentElement.classList.toggle('crt-on', crtOn);
-        const btn = document.getElementById('toggle-crt-btn');
-        const label = document.getElementById('crt-btn-text');
-        if (label) label.textContent = `CRT Filter: ${crtOn ? 'On' : 'Off'}`;
-    }
-    applyCrt();
     const crtBtn = document.getElementById('toggle-crt-btn');
     if (crtBtn) {
         crtBtn.addEventListener('click', () => {
