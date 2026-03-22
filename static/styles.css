@@ -1235,6 +1235,39 @@ html[data-theme="light"] .actions {
     border-color: #E5E1DA;
 }
 
+/* Override hardcoded purple for light theme */
+html[data-theme="light"] .space-item.active {
+    background: rgba(231, 125, 90, 0.12);
+    color: #C05030;
+}
+
+html[data-theme="light"] .space-item.active ion-icon {
+    color: #C05030;
+}
+
+html[data-theme="light"] .filter-badge.active {
+    background: rgba(231, 125, 90, 0.15);
+    border-color: #E77D5A;
+    color: #B04828;
+}
+
+html[data-theme="light"] .autocomplete-item:hover {
+    background: rgba(231, 125, 90, 0.12);
+    color: #2D2D2D;
+}
+
+html[data-theme="light"] .item-tag {
+    background: rgba(231, 125, 90, 0.12);
+    color: #B04828;
+    border-color: rgba(231, 125, 90, 0.3);
+}
+
+html[data-theme="light"] .tag-badge {
+    background: rgba(231, 125, 90, 0.12);
+    color: #B04828;
+    border-color: rgba(231, 125, 90, 0.3);
+}
+
 /* Forest */
 html[data-theme="box-x"] {
     --bg-color: #071a10;
