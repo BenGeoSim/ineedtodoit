@@ -493,6 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // tiny dot
             const d = document.createElement('div');
             d.className = `priority-dot priority-${i}`;
+            d.dataset.prio = i - 1;
             d.style.marginRight = '0';
             d.style.width = '8px';
             d.style.height = '8px';

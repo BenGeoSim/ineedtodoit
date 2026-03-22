@@ -1291,8 +1291,8 @@ html[data-theme="terminal"] .priority-dot {
     background: none !important;
     box-shadow: none !important;
     border: none !important;
-    width: auto;
-    height: auto;
+    width: auto !important;
+    height: auto !important;
     color: var(--text-main);
     font-size: 16px;
     line-height: 1;
