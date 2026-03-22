@@ -1195,28 +1195,55 @@ html[data-theme="forest"] .login-card h2 {
     -webkit-text-fill-color: transparent;
 }
 
-/* Sunset */
-html[data-theme="sunset"] {
-    --bg-color: #1a0810;
-    --card-bg: rgba(40, 12, 24, 0.85);
-    --card-border: rgba(255, 255, 255, 0.08);
-    --text-main: #fff1f2;
-    --text-muted: #fda4af;
-    --input-bg: rgba(26, 8, 16, 0.7);
-    --accent: #f43f5e;
-    --accent-hover: #e11d48;
-    --accent-glow: rgba(244, 63, 94, 0.35);
-    --blob-1: #9f1239;
-    --blob-2: #c2410c;
+/* Terminal */
+html[data-theme="terminal"] {
+    --bg-color: #0d0208;
+    --card-bg: rgba(0, 59, 0, 0.5);
+    --card-border: rgba(0, 143, 17, 0.3);
+    --text-main: #00ff41;
+    --text-muted: #008f11;
+    --input-bg: rgba(0, 59, 0, 0.6);
+    --accent: #008f11;
+    --accent-hover: #00ff41;
+    --accent-glow: rgba(0, 255, 65, 0.25);
+    --success: #00ff41;
+    --danger: #00ff41;
+    --blob-1: #003b00;
+    --blob-2: #003b00;
     color-scheme: dark;
 }
 
-html[data-theme="sunset"] h1,
-html[data-theme="sunset"] .login-card h2 {
-    background: linear-gradient(135deg, #fda4af, #fb923c);
+html[data-theme="terminal"] h1,
+html[data-theme="terminal"] .login-card h2 {
+    background: linear-gradient(135deg, #008f11, #00ff41);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+html[data-theme="terminal"] .todo-content {
+    background: rgba(0, 59, 0, 0.2);
+}
+
+html[data-theme="terminal"] .todo-content:hover {
+    background: rgba(0, 59, 0, 0.4);
+    border-color: rgba(0, 143, 17, 0.5);
+}
+
+html[data-theme="terminal"] .checkbox {
+    border-color: #008f11;
+}
+
+html[data-theme="terminal"] .item-tag {
+    background: rgba(0, 59, 0, 0.6);
+    color: #00ff41;
+    border-color: rgba(0, 143, 17, 0.5);
+}
+
+html[data-theme="terminal"] .filter-badge.active {
+    background: rgba(0, 59, 0, 0.6);
+    border-color: #008f11;
+    color: #00ff41;
 }
 
 /* Theme swatch picker */
