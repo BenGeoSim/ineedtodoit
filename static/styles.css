@@ -1303,6 +1303,18 @@ html[data-theme="terminal"] .blob {
     display: none;
 }
 
+/* Add subtask button: show V instead of icon */
+html[data-theme="terminal"] .add-child ion-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] .add-child::before {
+    content: "V";
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--text-main);
+}
+
 /* Priority: [0]–[4] text instead of coloured dot */
 html[data-theme="terminal"] .priority-dot {
     background: none !important;
