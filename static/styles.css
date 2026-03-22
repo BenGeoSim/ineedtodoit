@@ -1570,6 +1570,26 @@ html[data-theme="terminal"] .primary-btn {
     color: var(--text-main) !important;
 }
 
+html[data-theme="terminal"] #add-todo-btn {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+}
+
+html[data-theme="terminal"] #add-todo-btn ion-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] #add-todo-btn::before {
+    content: "[commit]";
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: var(--text-main);
+}
+
 /* Remove tag button: * in theme colour, no icon */
 html[data-theme="terminal"] .item-tag .remove-tag {
     color: var(--text-muted);
