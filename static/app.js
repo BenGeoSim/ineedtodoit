@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.theme-swatch').forEach(s => {
             s.classList.toggle('active', s.dataset.theme === (name || 'dark'));
         });
+        // Show CRT toggle only in terminal theme
+        document.getElementById('toggle-crt-btn')?.classList.toggle('hidden', (name || 'dark') !== 'terminal');
     }
     applyTheme(localStorage.getItem('theme') || 'dark');
     document.querySelectorAll('.theme-swatch').forEach(btn => {
@@ -38,6 +40,24 @@ document.addEventListener('DOMContentLoaded', () => {
             applyTheme(btn.dataset.theme);
         });
     });
+
+    // CRT filter toggle
+    let crtOn = localStorage.getItem('crt_filter') === 'true';
+    function applyCrt() {
+        document.documentElement.classList.toggle('crt-on', crtOn);
+        const btn = document.getElementById('toggle-crt-btn');
+        const label = document.getElementById('crt-btn-text');
+        if (label) label.textContent = `CRT Filter: ${crtOn ? 'On' : 'Off'}`;
+    }
+    applyCrt();
+    const crtBtn = document.getElementById('toggle-crt-btn');
+    if (crtBtn) {
+        crtBtn.addEventListener('click', () => {
+            crtOn = !crtOn;
+            localStorage.setItem('crt_filter', crtOn);
+            applyCrt();
+        });
+    }
 
     // Tags visibility toggle
     let tagsHidden = localStorage.getItem('tags_hidden') === 'true';

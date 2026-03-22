@@ -90,6 +90,9 @@
                     style="text-decoration:none;">
                     <ion-icon name="shield-checkmark-outline"></ion-icon> <span>Admin Dashboard</span>
                 </a>
+                <button id="toggle-crt-btn" class="dropdown-item terminal-only hidden">
+                    <ion-icon name="tv-outline"></ion-icon> <span id="crt-btn-text">CRT Filter: Off</span>
+                </button>
                 <button id="toggle-trash-btn" class="dropdown-item">
                     <ion-icon name="trash-outline"></ion-icon> <span id="trash-btn-text">View Trash</span>
                 </button>
@@ -341,6 +344,7 @@
             </div>
         </div>
     </div>
+    <div id="crt-overlay" aria-hidden="true"></div>
 </body>
 
 </html>
