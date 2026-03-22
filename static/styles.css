@@ -1303,7 +1303,27 @@ html[data-theme="terminal"] .blob {
     display: none;
 }
 
-html[data-theme="terminal"] .add-child::before { content: "[v]"; }
+/* Add subtask button: plain text, no button styling */
+html[data-theme="terminal"] .add-child {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin-left: 0 !important;
+}
+
+html[data-theme="terminal"] .add-child ion-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] .add-child::before {
+    content: "[v]";
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--text-main);
+}
 
 /* Priority: [0]–[4] text instead of coloured dot */
 html[data-theme="terminal"] .priority-dot {
@@ -1321,35 +1341,26 @@ html[data-theme="terminal"] .priority-dot::before {
     content: "[" attr(data-prio) "]";
 }
 
-/* All action buttons: no box, [] style labels */
-html[data-theme="terminal"] .action-btn {
+/* Task hamburger menu: [...] with no button box */
+html[data-theme="terminal"] .task-menu-btn {
     background: none !important;
     border: none !important;
     box-shadow: none !important;
     width: auto !important;
     height: auto !important;
     padding: 0 !important;
-    margin-left: 0 !important;
 }
 
-html[data-theme="terminal"] .action-btn ion-icon {
+html[data-theme="terminal"] .task-menu-btn ion-icon {
     display: none;
 }
 
-html[data-theme="terminal"] .action-btn::before {
+html[data-theme="terminal"] .task-menu-btn::before {
+    content: "[...]";
     font-family: 'VT323', monospace;
     font-size: 18px;
     color: var(--text-main);
 }
-
-html[data-theme="terminal"] .task-menu-btn::before    { content: "[...]"; }
-html[data-theme="terminal"] .description-toggle::before { content: "[n]"; }
-html[data-theme="terminal"] .add-tag::before          { content: "[#]"; }
-html[data-theme="terminal"] .action-btn.edit::before  { content: "[e]"; }
-html[data-theme="terminal"] .action-btn.restore::before { content: "[u]"; }
-html[data-theme="terminal"] .set-due-date::before     { content: "[d]"; }
-html[data-theme="terminal"] .move-to-space::before    { content: "[>]"; }
-html[data-theme="terminal"] .action-btn.delete::before { content: "[x]"; }
 
 /* Creator/ownership badge: theme green border */
 html[data-theme="terminal"] .creator-badge {
