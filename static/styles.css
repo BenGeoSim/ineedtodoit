@@ -1672,13 +1672,13 @@ html[data-theme="terminal"] #terminal-input-wrapper {
 }
 
 html[data-theme="terminal"] .terminal-input-prompt {
-    font-size: 16px;
+    font-size: 32px;
     color: var(--text-muted);
     margin-bottom: 4px;
 }
 
 html[data-theme="terminal"] .terminal-task-field {
-    font-size: 20px;
+    font-size: 40px;
     color: var(--text-main);
     background: none;
     border: none;
