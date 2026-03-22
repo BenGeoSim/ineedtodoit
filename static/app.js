@@ -1256,22 +1256,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyCrt();
                 return;
             }
-            const prioMatch = raw.match(/^\/priority\/\s*([0-4])$/i);
+            // /priority/ N inline — extract and remove from raw before further parsing
+            let taskPrio = selectedPriority || 3;
+            let cookedRaw = raw;
+            const prioMatch = raw.match(/\/priority\/\s*([0-4])/i);
             if (prioMatch) {
-                terminalInput.textContent = '';
-                const p = parseInt(prioMatch[1]) + 1; // display 0-4 maps to internal 1-5
-                selectedPriority = (selectedPriority === p) ? null : p;
-                render();
-                return;
+                taskPrio = parseInt(prioMatch[1]) + 1; // display 0-4 → internal 1-5
+                cookedRaw = raw.replace(prioMatch[0], '').trim();
             }
-            const parts = raw.split(/\/tag\//i);
+            const parts = cookedRaw.split(/\/tag\//i);
             const text = parts[0].trim();
             const tags = parts[1] ? processTags(parts[1]) : [];
             if (!text) return;
             terminalInput.textContent = '';
             // Reuse submitRoot logic with parsed values
             const newId = crypto.randomUUID();
-            const defaultPrio = selectedPriority || 3;
+            const defaultPrio = taskPrio;
             const newTodo = { id: newId, text, parent_id: null, completed: false, tags, priority: defaultPrio, space_id: currentSpaceId };
             todos.push(newTodo);
             updateGlobalTodo(newTodo.id, newTodo);
