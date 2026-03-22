@@ -14,7 +14,7 @@
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <!-- Apply saved theme before paint to avoid flash -->
-    <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t;})()</script>
+    <script>(function () { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; })()</script>
 </head>
 
 <body>
@@ -70,10 +70,14 @@
                     <ion-icon name="color-palette-outline"></ion-icon>
                     <span>Theme</span>
                     <div class="theme-swatches">
-                        <button class="theme-swatch" data-theme="dark"   title="Dark"   style="background:linear-gradient(135deg,#8b5cf6,#3b82f6)"></button>
-                        <button class="theme-swatch" data-theme="light"  title="Light"  style="background:linear-gradient(135deg,#c7d2fe,#bfdbfe)"></button>
-                        <button class="theme-swatch" data-theme="forest" title="Forest" style="background:linear-gradient(135deg,#14532d,#22c55e)"></button>
-                        <button class="theme-swatch" data-theme="terminal" title="Terminal" style="background:linear-gradient(135deg,#003b00,#00ff41)"></button>
+                        <button class="theme-swatch" data-theme="dark" title="Dark"
+                            style="background:linear-gradient(135deg,#8b5cf6,#3b82f6)"></button>
+                        <button class="theme-swatch" data-theme="light" title="Light"
+                            style="background:linear-gradient(135deg,#c7d2fe,#bfdbfe)"></button>
+                        <button class="theme-swatch" data-theme="forest" title="Forest"
+                            style="background:linear-gradient(135deg,#14532d,#22c55e)"></button>
+                        <button class="theme-swatch" data-theme="terminal" title="Terminal"
+                            style="background:linear-gradient(135deg,#003b00,#00ff41)"></button>
                     </div>
                 </div>
                 <a href="/about.html" class="dropdown-item" style="text-decoration:none;">
@@ -107,7 +111,7 @@
         </div>
 
         <div id="terminal-input-wrapper">
-            <div class="terminal-input-prompt">What needs to be done</div>
+            <div class="terminal-input-prompt">What needs to be done? (use /tag/ tag one, tag two)</div>
             <div id="terminal-task-input" contenteditable="true" spellcheck="false" class="terminal-task-field"></div>
         </div>
 
@@ -191,7 +195,8 @@
             </div>
             <!-- Description Panel (hidden by default) -->
             <div class="description-panel hidden">
-                <div class="description-content" contenteditable="false" data-placeholder="Click to add a description..."></div>
+                <div class="description-content" contenteditable="false"
+                    data-placeholder="Click to add a description..."></div>
                 <div class="description-actions">
                     <button class="description-edit-btn action-btn" title="Edit description">
                         <ion-icon name="pencil-outline"></ion-icon>
