@@ -14,7 +14,7 @@
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <!-- Apply saved theme before paint to avoid flash -->
-    <script>(function () { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; })()</script>
+    <script>(function () { var t = localStorage.getItem('theme') || 'sol'; document.documentElement.dataset.theme = t; })()</script>
 </head>
 
 <body>

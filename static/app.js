@@ -33,13 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function applyTheme(name) {
-        document.documentElement.dataset.theme = name || 'dark';
-        localStorage.setItem('theme', name || 'dark');
+        document.documentElement.dataset.theme = name || 'sol';
+        localStorage.setItem('theme', name || 'sol');
         document.querySelectorAll('.theme-swatch').forEach(s => {
-            s.classList.toggle('active', s.dataset.theme === (name || 'dark'));
+            s.classList.toggle('active', s.dataset.theme === (name || 'sol'));
         });
         // Show CRT toggle only in terminal theme; auto-off when leaving terminal
-        const isTerminal = (name || 'dark') === 'terminal';
+        const isTerminal = (name || 'sol') === 'terminal';
         document.getElementById('toggle-crt-btn')?.classList.toggle('hidden', !isTerminal);
         if (!isTerminal && crtOn) {
             crtOn = false;
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (isTerminal) setTimeout(terminalAutoFocus, 50);
     }
-    applyTheme(localStorage.getItem('theme') || 'dark');
+    applyTheme(localStorage.getItem('theme') || 'sol');
     applyCrt();
     document.querySelectorAll('.theme-swatch').forEach(btn => {
         btn.addEventListener('click', (e) => {
