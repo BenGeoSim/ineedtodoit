@@ -1517,7 +1517,7 @@ html[data-theme="terminal"] .toggle-children ion-icon {
 }
 
 html[data-theme="terminal"] .toggle-children::before {
-    content: ">";
+    content: "[+]";
     font-family: 'VT323', monospace;
     font-size: 18px;
 }
@@ -1527,7 +1527,7 @@ html[data-theme="terminal"] .toggle-children.expanded {
 }
 
 html[data-theme="terminal"] .toggle-children.expanded::before {
-    content: "v";
+    content: "[-]";
 }
 
 /* View note indicator button */
