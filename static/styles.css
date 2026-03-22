@@ -1344,6 +1344,14 @@ html[data-theme="terminal"] #menu-toggle-btn::before {
     color: var(--text-main);
 }
 
+/* Space type icons: Solo / Team text */
+html[data-theme="terminal"] [data-space-type] ion-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] [data-space-type="solo"]::before { content: "Solo "; }
+html[data-theme="terminal"] [data-space-type="team"]::before { content: "Team "; }
+
 /* Description panel edit button: [edit] */
 html[data-theme="terminal"] .description-edit-btn {
     background: none !important;

@@ -140,8 +140,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update the main toggle button's icon based on current space
         if (currentSpaceId === null) {
             currentSpaceIcon.name = 'person-outline';
+            currentSpaceBtn.dataset.spaceType = 'solo';
         } else {
             currentSpaceIcon.name = 'people-outline';
+            currentSpaceBtn.dataset.spaceType = 'team';
         }
 
         // Rebuild space list
@@ -151,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const personalBtn = document.createElement('button');
         personalBtn.className = `dropdown-item space-item ${currentSpaceId === null ? 'active' : ''}`;
         personalBtn.dataset.id = 'personal';
+        personalBtn.dataset.spaceType = 'solo';
         personalBtn.innerHTML = '<ion-icon name="person-outline"></ion-icon> <span>Personal Tasks</span>';
         spaceList.appendChild(personalBtn);
 
@@ -158,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const spaceBtn = document.createElement('button');
             spaceBtn.className = `dropdown-item space-item ${currentSpaceId === space.id ? 'active' : ''}`;
             spaceBtn.dataset.id = space.id;
+            spaceBtn.dataset.spaceType = 'team';
             spaceBtn.innerHTML = `<ion-icon name="people-outline"></ion-icon> <span>${space.name}</span>`;
             spaceList.appendChild(spaceBtn);
         });
