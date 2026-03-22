@@ -1246,6 +1246,41 @@ html[data-theme="terminal"] .filter-badge.active {
     color: #00ff41;
 }
 
+/* No rounded corners — old-school terminal feel */
+html[data-theme="terminal"] *,
+html[data-theme="terminal"] *::before,
+html[data-theme="terminal"] *::after {
+    border-radius: 0 !important;
+}
+
+/* Monospace font throughout */
+html[data-theme="terminal"],
+html[data-theme="terminal"] input,
+html[data-theme="terminal"] button,
+html[data-theme="terminal"] .text {
+    font-family: 'Courier New', Courier, monospace !important;
+}
+
+/* Solid borders, no blur */
+html[data-theme="terminal"] .app-container,
+html[data-theme="terminal"] .dropdown-menu,
+html[data-theme="terminal"] .login-card,
+html[data-theme="terminal"] .actions {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: #008f11 !important;
+}
+
+/* Green text glow on headings */
+html[data-theme="terminal"] h1 {
+    text-shadow: 0 0 12px #00ff41;
+}
+
+/* Blobs don't fit the look — hide them */
+html[data-theme="terminal"] .blob {
+    display: none;
+}
+
 /* Theme swatch picker */
 .theme-picker-row {
     cursor: default;
