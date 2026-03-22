@@ -2,7 +2,7 @@
 
 @font-face {
     font-family: 'BoxFont';
-    src: url('/static/boxfont.ttf') format('truetype');
+    src: url('/boxfont.ttf') format('truetype');
 }
 
 :root {
