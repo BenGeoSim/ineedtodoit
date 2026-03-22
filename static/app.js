@@ -572,6 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const priorityDot = clone.querySelector('.priority-dot');
         const prio = item.priority || 3;
         priorityDot.classList.add(`priority-${prio}`);
+        priorityDot.dataset.prio = prio - 1;
 
         // Render Creator Badge (Initials)
         const creatorBadge = clone.querySelector('.creator-badge');
@@ -606,6 +607,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             priorityDot.classList.remove(`priority-${currentPrio}`);
             priorityDot.classList.add(`priority-${newPriority}`);
+            priorityDot.dataset.prio = newPriority - 1;
 
             item.priority = newPriority;
             updateGlobalTodo(item.id, { priority: newPriority });
@@ -626,6 +628,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateGlobalTodo(item.id, { priority: currentPrio });
                 priorityDot.classList.remove(`priority-${newPriority}`);
                 priorityDot.classList.add(`priority-${currentPrio}`);
+                priorityDot.dataset.prio = currentPrio - 1;
             }
         });
 
