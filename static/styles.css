@@ -1286,23 +1286,20 @@ html[data-theme="terminal"] .blob {
     display: none;
 }
 
-/* Priority: numbered box instead of coloured dot */
+/* Priority: [0]–[4] text instead of coloured dot */
 html[data-theme="terminal"] .priority-dot {
     background: none !important;
     box-shadow: none !important;
-    border: 1px solid var(--text-main);
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border: none !important;
+    width: auto;
+    height: auto;
     color: var(--text-main);
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1;
 }
 
 html[data-theme="terminal"] .priority-dot::before {
-    content: attr(data-prio);
+    content: "[" attr(data-prio) "]";
 }
 
 /* Theme swatch picker */
