@@ -1349,8 +1349,8 @@ html[data-theme="terminal"] [data-space-type] ion-icon {
     display: none;
 }
 
-html[data-theme="terminal"] [data-space-type="solo"]::before { content: "Solo "; }
-html[data-theme="terminal"] [data-space-type="team"]::before { content: "Team "; }
+html[data-theme="terminal"] [data-space-type="solo"]::before { content: "[Solo] "; }
+html[data-theme="terminal"] [data-space-type="team"]::before { content: "[Team] "; }
 
 /* Description panel edit button: [edit] */
 html[data-theme="terminal"] .description-edit-btn {
