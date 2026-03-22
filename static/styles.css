@@ -1320,6 +1320,28 @@ html[data-theme="terminal"] #toggle-tags-btn.tags-hidden-active::before {
     color: var(--text-main);
 }
 
+/* Top-right hamburger menu: [...] */
+html[data-theme="terminal"] #menu-toggle-btn {
+    background: none !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+html[data-theme="terminal"] #menu-toggle-btn:hover {
+    background: none !important;
+}
+
+html[data-theme="terminal"] #menu-toggle-btn ion-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] #menu-toggle-btn::before {
+    content: "[...]";
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: var(--text-main);
+}
+
 /* No rounded corners — old-school terminal feel */
 html[data-theme="terminal"] *,
 html[data-theme="terminal"] *::before,
