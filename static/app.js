@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('crt_filter', false);
             applyCrt();
         }
+        if (isTerminal) setTimeout(terminalAutoFocus, 50);
     }
     applyTheme(localStorage.getItem('theme') || 'dark');
     applyCrt();
@@ -1243,6 +1244,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Terminal-style input
     const terminalInput = document.getElementById('terminal-task-input');
+
+    function terminalAutoFocus() {
+        if (document.documentElement.dataset.theme !== 'terminal') return;
+        const active = document.activeElement;
+        const isOtherInput = active && active !== terminalInput &&
+            (active.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName));
+        if (!isOtherInput) terminalInput.focus();
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('input, textarea, [contenteditable], select, button, a, details, label')) {
+            terminalAutoFocus();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (document.documentElement.dataset.theme !== 'terminal') return;
+        const active = document.activeElement;
+        const isOtherInput = active && active !== terminalInput &&
+            (active.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName));
+        if (!isOtherInput && document.activeElement !== terminalInput &&
+            !e.ctrlKey && !e.metaKey && !e.altKey && e.key.length === 1) {
+            terminalInput.focus();
+        }
+    });
+
     if (terminalInput) {
         terminalInput.addEventListener('keydown', async (e) => {
             if (e.key !== 'Enter') return;
