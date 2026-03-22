@@ -1670,7 +1670,7 @@ html[data-theme="terminal"] .terminal-task-field {
     outline: none;
     width: 100%;
     min-height: 1.4em;
-    caret-color: var(--text-main);
+    caret-color: transparent;
 }
 
 html[data-theme="terminal"] .terminal-task-field:empty::before {
