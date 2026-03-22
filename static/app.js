@@ -1259,7 +1259,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const prioMatch = raw.match(/^\/priority\/\s*([0-4])$/i);
             if (prioMatch) {
                 terminalInput.textContent = '';
-                const p = parseInt(prioMatch[1]);
+                const p = parseInt(prioMatch[1]) + 1; // display 0-4 maps to internal 1-5
                 selectedPriority = (selectedPriority === p) ? null : p;
                 render();
                 return;
