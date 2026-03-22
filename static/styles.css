@@ -1341,6 +1341,27 @@ html[data-theme="terminal"] .priority-dot::before {
     content: "[" attr(data-prio) "]";
 }
 
+/* Task hamburger menu: [...] with no button box */
+html[data-theme="terminal"] .task-menu-btn {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+}
+
+html[data-theme="terminal"] .task-menu-btn ion-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] .task-menu-btn::before {
+    content: "[...]";
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: var(--text-main);
+}
+
 /* Creator/ownership badge: theme green border */
 html[data-theme="terminal"] .creator-badge {
     background: rgba(0, 59, 0, 0.4);
