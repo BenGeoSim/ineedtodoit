@@ -1262,7 +1262,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const prioMatch = raw.match(/\/priority\/\s*([0-4])/i);
             if (prioMatch) {
                 taskPrio = parseInt(prioMatch[1]) + 1; // display 0-4 → internal 1-5
-                cookedRaw = raw.replace(prioMatch[0], '').trim();
+                cookedRaw = cookedRaw.replace(prioMatch[0], '').trim();
+            }
+            // /due/ DDMMYY or DDMMYYYY inline
+            let taskDue = null;
+            const dueMatch = cookedRaw.match(/\/due\/\s*(\d{6}|\d{8})/i);
+            if (dueMatch) {
+                const d = dueMatch[1];
+                const dd = d.slice(0, 2), mm = d.slice(2, 4);
+                const yy = d.length === 8 ? d.slice(4) : '20' + d.slice(4);
+                taskDue = `${yy}-${mm}-${dd}`;
+                cookedRaw = cookedRaw.replace(dueMatch[0], '').trim();
             }
             const parts = cookedRaw.split(/\/tag\//i);
             const text = parts[0].trim();
@@ -1272,7 +1282,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Reuse submitRoot logic with parsed values
             const newId = crypto.randomUUID();
             const defaultPrio = taskPrio;
-            const newTodo = { id: newId, text, parent_id: null, completed: false, tags, priority: defaultPrio, space_id: currentSpaceId };
+            const newTodo = { id: newId, text, parent_id: null, completed: false, tags, priority: defaultPrio, due_date: taskDue, space_id: currentSpaceId };
             todos.push(newTodo);
             updateGlobalTodo(newTodo.id, newTodo);
             selectedTag = null;
