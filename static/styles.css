@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
+@font-face {
+    font-family: 'BoxFont';
+    src: url('/static/boxfont.ttf') format('truetype');
+}
+
 :root {
     --bg-color: #0f172a;
     --card-bg: rgba(30, 41, 59, 0.7);
@@ -1195,6 +1200,10 @@ html[data-theme="box-x"] .login-card h2 {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+html[data-theme="box-x"] #header-title {
+    font-family: 'BoxFont', sans-serif;
 }
 
 /* Terminal */
