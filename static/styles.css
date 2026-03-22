@@ -1309,7 +1309,7 @@ html[data-theme="terminal"] .add-child ion-icon {
 }
 
 html[data-theme="terminal"] .add-child::before {
-    content: "V";
+    content: "[v]";
     font-family: 'VT323', monospace;
     font-size: 18px;
     color: var(--text-main);
