@@ -1215,6 +1215,46 @@ document.addEventListener('DOMContentLoaded', () => {
     rootInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') submitRoot();
     });
+
+    // Terminal-style input
+    const terminalInput = document.getElementById('terminal-task-input');
+    if (terminalInput) {
+        terminalInput.addEventListener('keydown', async (e) => {
+            if (e.key !== 'Enter') return;
+            e.preventDefault();
+            const raw = terminalInput.textContent.trim();
+            if (!raw) return;
+            const parts = raw.split(/\/tag\//i);
+            const text = parts[0].trim();
+            const tags = parts[1] ? processTags(parts[1]) : [];
+            if (!text) return;
+            terminalInput.textContent = '';
+            // Reuse submitRoot logic with parsed values
+            const newId = crypto.randomUUID();
+            const defaultPrio = selectedPriority || 3;
+            const newTodo = { id: newId, text, parent_id: null, completed: false, tags, priority: defaultPrio, space_id: currentSpaceId };
+            todos.push(newTodo);
+            updateGlobalTodo(newTodo.id, newTodo);
+            selectedTag = null;
+            render();
+            try {
+                const res = await fetch('/api/todos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(newTodo)
+                });
+                if (res.status === 401) { window.location.reload(); return; }
+                if (!res.ok) throw new Error('API failed');
+            } catch (e) {
+                console.error(e);
+                todos = todos.filter(t => t.id !== newId);
+                render();
+                terminalInput.textContent = raw;
+                alert('Failed to save todo.');
+            }
+        });
+    }
     rootTagsInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') submitRoot();
     });

@@ -1640,6 +1640,49 @@ html[data-theme="terminal"] .due-date-badge.due-overdue {
 html[data-theme="terminal"] .due-date-badge::before { content: "["; }
 html[data-theme="terminal"] .due-date-badge::after  { content: "]"; }
 
+/* Terminal input: hidden by default, shown only in terminal theme */
+#terminal-input-wrapper {
+    display: none;
+}
+
+html[data-theme="terminal"] .root-input {
+    display: none !important;
+}
+
+html[data-theme="terminal"] #terminal-input-wrapper {
+    display: block;
+    margin-bottom: 20px;
+    font-family: 'VT323', monospace;
+    color: var(--text-main);
+}
+
+html[data-theme="terminal"] .terminal-input-prompt {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+html[data-theme="terminal"] .terminal-task-field {
+    font-size: 20px;
+    color: var(--text-main);
+    background: none;
+    border: none;
+    outline: none;
+    width: 100%;
+    min-height: 1.4em;
+    caret-color: var(--text-main);
+}
+
+html[data-theme="terminal"] .terminal-task-field:empty::before {
+    content: "_";
+    color: var(--text-main);
+    animation: terminal-blink 1s step-start infinite;
+}
+
+@keyframes terminal-blink {
+    50% { opacity: 0; }
+}
+
 /* Theme swatch picker */
 .theme-picker-row {
     cursor: default;
