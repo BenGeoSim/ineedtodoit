@@ -1812,6 +1812,15 @@ html[data-theme="terminal"] .terminal-help summary::-webkit-details-marker {
     display: none;
 }
 
+html[data-theme="terminal"] .terminal-help-summary::before {
+    content: "[+]";
+    margin-right: 4px;
+}
+
+html[data-theme="terminal"] .terminal-help[open] .terminal-help-summary::before {
+    content: "[-]";
+}
+
 html[data-theme="terminal"] .terminal-help[open] summary {
     color: var(--text-main);
     margin-bottom: 6px;
