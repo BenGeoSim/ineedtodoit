@@ -1290,6 +1290,36 @@ html[data-theme="terminal"] .filter-badge.active {
 html[data-theme="terminal"] .all-priorities-badge::before { content: "["; }
 html[data-theme="terminal"] .all-priorities-badge::after  { content: "]"; }
 
+html[data-theme="terminal"] .all-tags-badge::before  { content: "["; }
+html[data-theme="terminal"] .all-tags-badge::after   { content: "]"; }
+html[data-theme="terminal"] .tag-filter-badge::before { content: "["; }
+html[data-theme="terminal"] .tag-filter-badge::after  { content: "]"; }
+
+html[data-theme="terminal"] #toggle-tags-btn {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 4px !important;
+}
+
+html[data-theme="terminal"] #toggle-tags-btn ion-icon {
+    display: none;
+}
+
+html[data-theme="terminal"] #toggle-tags-btn::before {
+    content: "[#]";
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: var(--text-muted);
+}
+
+html[data-theme="terminal"] #toggle-tags-btn:hover::before,
+html[data-theme="terminal"] #toggle-tags-btn.tags-hidden-active::before {
+    color: var(--text-main);
+}
+
 /* No rounded corners — old-school terminal feel */
 html[data-theme="terminal"] *,
 html[data-theme="terminal"] *::before,

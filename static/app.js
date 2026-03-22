@@ -432,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add "All tags" badge
         const allBadge = document.createElement('span');
-        allBadge.className = 'filter-badge';
+        allBadge.className = 'filter-badge all-tags-badge';
         if (selectedTag === null) allBadge.classList.add('active');
         allBadge.textContent = 'All tags';
         allBadge.addEventListener('click', () => {
@@ -445,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add dynamic tags
         tags.forEach(tag => {
             const badge = document.createElement('span');
-            badge.className = 'filter-badge';
+            badge.className = 'filter-badge tag-filter-badge';
             if (selectedTag === tag) badge.classList.add('active');
             badge.textContent = tag;
             badge.addEventListener('click', () => {
