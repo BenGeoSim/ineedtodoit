@@ -1276,24 +1276,24 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const raw = terminalInput.textContent.trim();
             if (!raw) return;
-            if (/^\/crt\/$/i.test(raw)) {
+            if (/^-crt$/i.test(raw)) {
                 terminalInput.textContent = '';
                 crtOn = !crtOn;
                 localStorage.setItem('crt_filter', crtOn);
                 applyCrt();
                 return;
             }
-            // /priority/ N inline — extract and remove from raw before further parsing
+            // -priority N inline — extract and remove from raw before further parsing
             let taskPrio = selectedPriority || 3;
             let cookedRaw = raw;
-            const prioMatch = raw.match(/\/priority\/\s*([0-4])/i);
+            const prioMatch = raw.match(/-priority\s+([0-4])/i);
             if (prioMatch) {
                 taskPrio = parseInt(prioMatch[1]) + 1; // display 0-4 → internal 1-5
                 cookedRaw = cookedRaw.replace(prioMatch[0], '').trim();
             }
-            // /due/ DDMMYY or DDMMYYYY inline
+            // -due DDMMYY or DDMMYYYY inline
             let taskDue = null;
-            const dueMatch = cookedRaw.match(/\/due\/\s*(\d{6}|\d{8})/i);
+            const dueMatch = cookedRaw.match(/-due\s+(\d{6}|\d{8})/i);
             if (dueMatch) {
                 const d = dueMatch[1];
                 const dd = d.slice(0, 2), mm = d.slice(2, 4);
@@ -1301,14 +1301,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 taskDue = `${yy}-${mm}-${dd}`;
                 cookedRaw = cookedRaw.replace(dueMatch[0], '').trim();
             }
-            // /note/ everything after becomes the description
+            // -note everything after becomes the description
             let taskNote = '';
-            const noteMatch = cookedRaw.match(/\/note\/\s*(.*)/i);
+            const noteMatch = cookedRaw.match(/-note\s+(.*)/i);
             if (noteMatch) {
                 taskNote = noteMatch[1].trim();
                 cookedRaw = cookedRaw.replace(noteMatch[0], '').trim();
             }
-            const parts = cookedRaw.split(/\/tag\//i);
+            const parts = cookedRaw.split(/-tag\s+/i);
             const text = parts[0].trim();
             const tags = parts[1] ? processTags(parts[1]) : [];
             if (!text) return;
