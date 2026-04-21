@@ -499,6 +499,12 @@ ul.expanded {
     display: flex;
 }
 
+/* Elevate any task item that has an open menu above its siblings */
+.todo-item:has(.task-menu-wrapper.open) {
+    position: relative;
+    z-index: 200;
+}
+
 /* Mobile styles moved to bottom */
 
 .action-btn {
