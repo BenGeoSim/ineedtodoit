@@ -117,6 +117,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             await fetchSpaces();
+
+            // Handle ?space= deep-link: switch to the requested space if the user is a member
+            const urlParams = new URLSearchParams(window.location.search);
+            const spaceParam = urlParams.get('space');
+            if (spaceParam && sharedSpaces.some(s => s.id === spaceParam)) {
+                currentSpaceId = spaceParam;
+                sortBy = getSortPreference();
+                renderSpaceSelector();
+                // Clean the URL without reloading the page
+                window.history.replaceState({}, '', window.location.pathname);
+            }
+
             await fetchTodos();
         } catch (e) {
             console.error('Failed to load initial data', e);
@@ -139,10 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!taglineEl) return;
 
         const addMemberBtn = document.getElementById('add-member-btn');
+        const copySpaceLinkBtn = document.getElementById('copy-space-link-btn');
         if (currentSpaceId === null) {
             taglineEl.textContent = 'Limitless nesting, seamless syncing.';
             if (renameBtn) renameBtn.classList.add('hidden');
             if (addMemberBtn) addMemberBtn.classList.add('hidden');
+            if (copySpaceLinkBtn) copySpaceLinkBtn.classList.add('hidden');
         } else {
             const space = sharedSpaces.find(s => s.id === currentSpaceId);
             if (space) {
@@ -154,6 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 taglineEl.textContent = `${space.name} • ${names}`;
                 if (renameBtn) renameBtn.classList.remove('hidden');
                 if (addMemberBtn) addMemberBtn.classList.remove('hidden');
+                if (copySpaceLinkBtn) copySpaceLinkBtn.classList.remove('hidden');
             }
         }
     }
@@ -1522,6 +1537,25 @@ document.addEventListener('DOMContentLoaded', () => {
             addMemberEmailInput.value = '';
             addMemberOverlay.classList.remove('hidden');
             addMemberEmailInput.focus();
+        });
+    }
+
+    // Copy Space Link
+    const copySpaceLinkBtnEl = document.getElementById('copy-space-link-btn');
+    const copySpaceLinkTextEl = document.getElementById('copy-space-link-text');
+    if (copySpaceLinkBtnEl) {
+        copySpaceLinkBtnEl.addEventListener('click', async () => {
+            if (!currentSpaceId) return;
+            document.getElementById('space-dropdown-menu').classList.remove('show');
+            const link = `${window.location.origin}${window.location.pathname}?space=${currentSpaceId}`;
+            try {
+                await navigator.clipboard.writeText(link);
+                copySpaceLinkTextEl.textContent = 'Copied!';
+                setTimeout(() => { copySpaceLinkTextEl.textContent = 'Copy Space Link'; }, 2000);
+            } catch (e) {
+                // Fallback for browsers that block clipboard API
+                prompt('Copy this link:', link);
+            }
         });
     }
 
