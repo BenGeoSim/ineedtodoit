@@ -1,0 +1,71 @@
+GMAIL SMTP FIX — 550 5.7.1 SPAM REJECTION
+==========================================
+
+PROBLEM
+-------
+Emails sent via smtplib were being rejected by Gmail with:
+  "550 5.7.1 — This message has been blocked because its content presents
+   a potential security issue."
+
+SOLUTION SUMMARY
+----------------
+Three things needed to be correct simultaneously:
+
+1. Use MIMEText (not a raw string) so the email has proper structure and
+   a correctly declared content type.
+
+2. Add a Date header using email.utils.formatdate() — Gmail rejects messages
+   without a valid Date header as they look machine-generated / spammy.
+
+3. Add a Message-ID header using email.utils.make_msgid() with your domain —
+   same reason, standard RFC 2822 compliance.
+
+
+WORKING CODE
+------------
+
+import smtplib
+import email.utils
+from email.mime.text import MIMEText
+
+NOTIFY_EMAIL = "you@gmail.com"         # Gmail sender address
+GMAIL_APP_PASSWORD = "xxxx xxxx xxxx xxxx"   # 16-char App Password (not your login password)
+
+def send_email(to: str, subject: str, body: str):
+    msg = MIMEText(body, 'plain', 'utf-8')
+    msg['Subject'] = subject
+    msg['From'] = NOTIFY_EMAIL
+    msg['To'] = to
+    msg['Date'] = email.utils.formatdate(localtime=True)
+    msg['Message-ID'] = email.utils.make_msgid(domain='yourdomain.com')
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+        server.login(NOTIFY_EMAIL, GMAIL_APP_PASSWORD)
+        server.sendmail(NOTIFY_EMAIL, to, msg.as_string())
+
+
+GMAIL APP PASSWORD SETUP
+------------------------
+1. Enable 2-Factor Authentication on the Google account.
+2. Go to: myaccount.google.com > Security > App Passwords
+3. Create a new App Password (name it anything, e.g. "todo app").
+4. Use the 16-character password in your code / .env file — NOT your login password.
+5. Store it in .env as e.g. GMAIL_APP_PASSWORD=xxxx xxxx xxxx xxxx
+
+
+WHAT DIDN'T WORK (and why)
+---------------------------
+- Sending a raw string via sendmail() — no MIME structure, Gmail flags it.
+- MIMEText alone without Date/Message-ID — still rejected; missing headers
+  are a spam signal.
+- Using a custom display name in From (e.g. "My App <you@gmail.com>") — can
+  trigger additional scrutiny; plain address is safer with App Passwords.
+
+
+NOTES
+-----
+- SMTP_SSL on port 465 is preferred over STARTTLS (port 587) for simplicity.
+- make_msgid(domain='yourdomain.com') — use your actual sending domain, not
+  gmail.com, to avoid conflicts.
+- If running in a background thread (e.g. FastAPI BackgroundTasks), wrap the
+  whole send in try/except so a failure doesn't crash the thread silently.

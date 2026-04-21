@@ -1,0 +1,188 @@
+CLOUDFLARE SETUP — RASPBERRY PI WEB APP
+========================================
+
+Two common approaches. Option A (Tunnel) is recommended for Pi — no port
+forwarding, no exposed IP, free SSL, works behind CGNAT.
+
+
+========================================
+OPTION A: CLOUDFLARE TUNNEL (Recommended for Pi)
+========================================
+
+HOW IT WORKS
+------------
+The Pi opens an outbound tunnel to Cloudflare. Traffic hits Cloudflare's
+edge, travels through the tunnel to your Pi, and back out. Your home IP
+is never exposed. No router port forwarding needed.
+
+STEP 1 — Add your domain to Cloudflare
+---------------------------------------
+1. Sign up at cloudflare.com (free plan is fine).
+2. Add your domain → Cloudflare gives you two nameservers.
+3. Log in to your domain registrar and point nameservers to Cloudflare's.
+4. Wait for propagation (usually under 30 mins).
+
+STEP 2 — Install cloudflared on the Pi
+---------------------------------------
+  # For 64-bit Pi OS (arm64):
+  wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64.deb
+  sudo dpkg -i cloudflared-linux-arm64.deb
+
+  # For 32-bit Pi OS (armhf):
+  wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm.deb
+  sudo dpkg -i cloudflared-linux-arm.deb
+
+  # Verify:
+  cloudflared --version
+
+STEP 3 — Authenticate
+-----------------------
+  cloudflared tunnel login
+
+This opens a browser link. Log in to Cloudflare and select your domain.
+A certificate is saved to ~/.cloudflared/cert.pem
+
+STEP 4 — Create a tunnel
+--------------------------
+  cloudflared tunnel create my-app
+
+Note the tunnel UUID printed (e.g. a1b2c3d4-...). Also saved to:
+  ~/.cloudflared/<UUID>.json
+
+STEP 5 — Create the config file
+---------------------------------
+  nano ~/.cloudflared/config.yml
+
+Paste this (replace UUID and domain):
+
+  tunnel: <YOUR-TUNNEL-UUID>
+  credentials-file: /home/pi/.cloudflared/<YOUR-TUNNEL-UUID>.json
+
+  ingress:
+    - hostname: yourdomain.com
+      service: http://localhost:8000
+    - hostname: www.yourdomain.com
+      service: http://localhost:8000
+    - service: http_status:404
+
+(Change port 8000 to whatever uvicorn / your app listens on.)
+
+STEP 6 — Create DNS record via cloudflared
+-------------------------------------------
+  cloudflared tunnel route dns my-app yourdomain.com
+  cloudflared tunnel route dns my-app www.yourdomain.com
+
+This creates CNAME records in Cloudflare pointing to the tunnel.
+
+STEP 7 — Test the tunnel
+--------------------------
+  cloudflared tunnel run my-app
+
+Visit yourdomain.com — it should load your app over HTTPS.
+Ctrl+C to stop.
+
+STEP 8 — Run as a systemd service (auto-start on boot)
+--------------------------------------------------------
+  sudo cloudflared service install
+  sudo systemctl enable cloudflared
+  sudo systemctl start cloudflared
+
+  # Check status:
+  sudo systemctl status cloudflared
+
+  # View logs:
+  sudo journalctl -u cloudflared -f
+
+
+========================================
+OPTION B: DIRECT DNS + PORT FORWARD (Simpler, but exposes your IP)
+========================================
+
+Use this if you have a static IP or are OK with DynDNS, and your ISP
+doesn't block inbound connections.
+
+STEP 1 — Add domain to Cloudflare (same as Option A, Step 1)
+
+STEP 2 — Add an A record
+--------------------------
+In the Cloudflare DNS dashboard:
+  Type: A
+  Name: @  (or www)
+  IPv4: <your home/Pi public IP>
+  Proxy: ON (orange cloud) — hides your real IP and enables Cloudflare CDN
+
+STEP 3 — Port forward on your router
+--------------------------------------
+Forward external port 80 and 443 to your Pi's local IP
+(find Pi's local IP with: hostname -I)
+
+STEP 4 — SSL on the Pi
+------------------------
+If using Cloudflare's proxy (orange cloud), you can use "Flexible" SSL
+in Cloudflare (HTTPS to Cloudflare, HTTP to Pi) with no cert needed on Pi.
+
+For end-to-end encryption, install certbot:
+  sudo apt install certbot
+  sudo certbot certonly --standalone -d yourdomain.com
+
+Then point uvicorn or nginx at the certs.
+
+
+========================================
+USEFUL CLOUDFLARE SETTINGS (both options)
+========================================
+
+SSL/TLS Mode (Dashboard > SSL/TLS > Overview)
+----------------------------------------------
+- Flexible:  HTTPS to Cloudflare, plain HTTP to origin. Easy, less secure.
+- Full:      HTTPS both ways but origin cert can be self-signed.
+- Full (Strict): HTTPS both ways, origin needs valid cert. Most secure.
+  For Tunnel: use Full or Full (Strict).
+
+Speed > Optimization
+---------------------
+- Enable "Auto Minify" (JS, CSS, HTML) — free performance boost.
+- Enable "Brotli" compression.
+
+Security > Settings
+--------------------
+- Security Level: Medium (default is fine for most apps).
+- Bot Fight Mode: On (blocks basic scrapers for free).
+
+Caching
+--------
+- Cache Level: Standard.
+- Browser Cache TTL: 4 hours is reasonable for a small app.
+  If your static assets change often, set lower or use cache-busting filenames.
+
+Page Rules (or the newer Transform Rules)
+------------------------------------------
+Redirect www → root or vice versa:
+  Match: www.yourdomain.com/*
+  Setting: Forwarding URL (301) → https://yourdomain.com/$1
+
+
+========================================
+TROUBLESHOOTING
+========================================
+
+Tunnel not connecting:
+  sudo journalctl -u cloudflared -f
+  Check the tunnel UUID matches in config.yml and the credentials file.
+
+522 / 523 errors (connection timed out to origin):
+  Your app isn't running or is on the wrong port. Check:
+    sudo systemctl status ineedtodoit
+    curl http://localhost:8000
+
+525 SSL handshake failed:
+  SSL mode mismatch. Switch Cloudflare SSL mode to Full (not Strict)
+  if you don't have a valid cert on the origin.
+
+DNS not resolving after setup:
+  Use: dig yourdomain.com @1.1.1.1
+  Propagation can take up to 48 hrs but is usually under 30 mins.
+
+Check which IP Cloudflare is routing to:
+  curl -I https://yourdomain.com
+  Look for "CF-Ray" header — confirms traffic is going through Cloudflare.

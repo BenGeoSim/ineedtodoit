@@ -799,6 +799,7 @@ ul.expanded {
     display: flex;
     flex-direction: column;
     padding: 8px 0;
+    z-index: 100;
 
     /* Animation defaults */
     opacity: 0;
